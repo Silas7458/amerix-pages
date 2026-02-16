@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Tandem Team — How It Works</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0e1a; overflow: hidden; font-family: 'Segoe UI', system-ui, sans-serif; }
+  canvas { display: block; }
+  
+  #controls {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 10px; z-index: 100; align-items: center;
+  }
+  #controls button {
+    padding: 8px 18px; border-radius: 8px; border: 1px solid #334155;
+    background: #1e293b; color: #94a3b8; cursor: pointer; font-size: 13px;
+    font-weight: 600; transition: all 0.2s;
+  }
+  #controls button:hover { border-color: #6366f1; color: #a5b4fc; }
+  #controls button.active { background: #6366f130; border-color: #6366f1; color: #a5b4fc; }
+  
+  #progress-bar {
+    position: fixed; bottom: 0; left: 0; height: 4px; background: #6366f1;
+    transition: width 0.3s; z-index: 100; border-radius: 0 2px 0 0;
+  }
+  
+  #scene-label {
+    position: fixed; bottom: 56px; left: 50%; transform: translateX(-50%);
+    color: #475569; font-size: 11px; z-index: 100; letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<div id="progress-bar" style="width:0%"></div>
+<div id="scene-label"></div>
+<div id="controls">
+  <button onclick="restart()">⟲ Restart</button>
+  <button id="playBtn" class="active" onclick="togglePlay()">⏸ Pause</button>
+  <button onclick="skipScene(1)">Next ▸</button>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let W, H, cx, cy;
+let time = 0;
+let playing = true;
+let sceneIndex = 0;
+let sceneTime = 0;
+let globalAlpha = 1;
+
+const C = {
+  proctor: '#6366f1', brother: '#f59e0b', stepbro: '#10b981',
+  sister: '#ec4899', cousin: '#06b6d4', silas: '#f97316',
+  text: '#e2e8f0', dim: '#475569', bg: '#0a0e1a', panel: '#1e293b',
+  accent: '#a5b4fc', wmcp: '#8b5cf6', archive: '#34d399',
+};
+
+const teammates = {
+  silas:    { emoji: '👤', label: 'SILAS', sub: 'CEO', color: C.silas, x: 0, y: 0 },
+  proctor:  { emoji: '🎯', label: 'PROCTOR', sub: 'Chat Hub', color: C.proctor, x: 0, y: 0 },
+  brother:  { emoji: '⚡', label: 'BROTHER', sub: 'CLI Terminal', color: C.brother, x: 0, y: 0 },
+  stepbro:  { emoji: '🔧', label: 'STEP BRO', sub: 'Code Tab', color: C.stepbro, x: 0, y: 0 },
+  sister:   { emoji: '📋', label: 'SISTER', sub: 'Cowork Tab', color: C.sister, x: 0, y: 0 },
+  cousin:   { emoji: '🌐', label: 'COUSIN', sub: 'Browser MCP', color: C.cousin, x: 0, y: 0 },
+};
+
+let packets = [];
+function sendPacket(fromId, toId, label, color, speed) {
+  const from = teammates[fromId]; const to = teammates[toId];
+  packets.push({ sx: from.x, sy: from.y, tx: to.x, ty: to.y, x: from.x, y: from.y,
+    progress: 0, speed: speed || 0.012, color: color || from.color, label: label || '',
+    size: 5, trail: [], alive: true });
+}
+
+let floatingTexts = [];
+let narration = { text: '', sub: '', alpha: 0, targetAlpha: 0 };
+function narrate(text, sub) { narration.text = text; narration.sub = sub || ''; narration.targetAlpha = 1; }
+function clearNarration() { narration.targetAlpha = 0; }
+
+let highlights = {};
+function highlight(id) { highlights[id] = 1; }
+function unhighlightAll() { highlights = {}; }
+
+let pulseRings = [];
+function addPulse(id, color) {
+  const t = teammates[id];
+  pulseRings.push({ x: t.x, y: t.y, r: 30, maxR: 80, color: color || t.color, alpha: 0.6 });
+}
+
+const SCENES = [
+  {
+    name: 'THE TEAM', duration: 360,
+    setup() { unhighlightAll(); clearNarration(); },
+    run(t) {
+      const titleAlpha = Math.min(t / 40, 1);
+      ctx.globalAlpha = titleAlpha;
+      ctx.font = 'bold 36px system-ui'; ctx.fillStyle = C.proctor;
+      ctx.textAlign = 'center'; ctx.fillText('THE TANDEM TEAM', cx, cy - 60);
+      ctx.font = '16px system-ui'; ctx.fillStyle = C.dim;
+      ctx.fillText('Amerix Medical Consulting — Multi-AI System', cx, cy - 25);
+      ctx.globalAlpha = 1;
+      const ids = ['silas', 'proctor', 'brother', 'stepbro', 'sister', 'cousin'];
+      ids.forEach((id, i) => {
+        const appear = t - 80 - i * 35;
+        if (appear > 0) {
+          const a = Math.min(appear / 30, 1);
+          ctx.globalAlpha = a; drawTeammate(teammates[id], false, a); ctx.globalAlpha = 1;
+          if (appear === 1) addPulse(id);
+        }
+      });
+      if (t > 200) {
+        ctx.globalAlpha = Math.min((t - 200) / 40, 1);
+        ctx.font = '14px system-ui'; ctx.fillStyle = C.accent; ctx.textAlign = 'center';
+        ctx.fillText('Five AI teammates working in concert, orchestrated by Proctor', cx, cy + 30);
+        ctx.fillStyle = C.dim; ctx.font = '12px system-ui';
+        ctx.fillText('Silas communicates through Proctor, who coordinates the entire family', cx, cy + 52);
+        ctx.globalAlpha = 1;
+      }
+    }
+  },
+  {
+    name: 'PROCTOR — THE HUB', duration: 420,
+    setup() { unhighlightAll(); highlight('proctor'); highlight('silas'); },
+    run(t) {
+      drawAllTeammates();
+      if (t > 30) drawAnimatedLine(teammates.silas, teammates.proctor, C.silas, t - 30, 'Chat Interface');
+      if (t > 10 && t < 60) drawCaption('Silas types into the Claude Desktop Chat tab...', cx, H * 0.12, C.text, 16);
+      if (t > 60 && t < 140) drawCaption("That's Proctor — the command center of the whole operation", cx, H * 0.12, C.accent, 16);
+      if (t === 70) sendPacket('silas', 'proctor', '"Analyze this CAP data"', C.silas, 0.015);
+      if (t > 130) addPulse('proctor', C.proctor);
+      if (t > 160 && t < 300) {
+        drawCaption('Proctor reads the task, decides WHO should handle it, and HOW', cx, H * 0.12, C.text, 16);
+        const arrowT = t - 180;
+        if (arrowT > 0) {
+          ['brother', 'stepbro', 'sister', 'cousin'].forEach((id, i) => {
+            if (arrowT > i * 25) drawDashedLine(teammates.proctor, teammates[id], teammates[id].color, Math.min((arrowT - i * 25) / 20, 0.3));
+          });
+        }
+      }
+      if (t > 300) {
+        drawCaption('Every task flows through Proctor first — nothing goes direct', cx, H * 0.12, C.accent, 15);
+        drawCallout(teammates.proctor.x, teammates.proctor.y - 70, 'Routes tasks • Monitors progress • Reports back to Silas', C.proctor);
+      }
+    }
+  },
+  {
+    name: 'EXAMPLE: DATABASE WORK', duration: 480,
+    setup() { unhighlightAll(); highlight('silas'); highlight('proctor'); },
+    run(t) {
+      drawAllTeammates();
+      if (t < 60) drawCaption('EXAMPLE: Silas needs PostgreSQL database changes for the SaaS platform', cx, H * 0.12, C.silas, 15);
+      if (t === 30) sendPacket('silas', 'proctor', '"Update the DB schema"', C.silas, 0.015);
+      if (t > 80 && t < 160) { drawThinkBubble(teammates.proctor, 'Database work → Brother handles this'); highlight('proctor'); }
+      if (t > 140 && t < 200) { drawCaption("Proctor types directly into Brother's terminal via Windows-MCP", cx, H * 0.12, C.wmcp, 15); highlight('brother'); }
+      if (t === 160) { sendPacket('proctor', 'brother', 'TERMINAL COMMAND', C.wmcp, 0.012); addPulse('proctor', C.wmcp); }
+      if (t > 160 && t < 280) drawBridge(teammates.proctor, teammates.brother, 'Windows-MCP', C.wmcp, (t - 160) / 120);
+      if (t > 220 && t < 350) { drawCaption('Brother runs the migration in his CLI terminal — PostgreSQL, Git, the heavy stuff', cx, H * 0.12, C.brother, 15); drawWorkingIndicator(teammates.brother, t); highlight('brother'); }
+      if (t === 320) sendPacket('brother', 'proctor', 'BRIEFING FILE', C.brother, 0.012);
+      if (t > 350 && t < 430) { drawCaption('Brother writes a briefing file → Proctor reads it → reports to Silas', cx, H * 0.12, C.accent, 15); highlight('proctor'); }
+      if (t === 380) sendPacket('proctor', 'silas', '"Migration complete ✓"', C.proctor, 0.015);
+      if (t > 430) drawCaption('✓ Task complete — Silas never had to leave the chat', cx, H * 0.12, C.archive, 15);
+    }
+  },
+  {
+    name: 'EXAMPLE: WEB AUTOMATION', duration: 420,
+    setup() { unhighlightAll(); highlight('silas'); highlight('proctor'); },
+    run(t) {
+      drawAllTeammates();
+      if (t < 60) drawCaption('EXAMPLE: Silas needs patient data pulled from Kantime Health portal', cx, H * 0.12, C.silas, 15);
+      if (t === 30) sendPacket('silas', 'proctor', '"Pull census from Kantime"', C.silas, 0.015);
+      if (t > 80 && t < 150) drawThinkBubble(teammates.proctor, 'Browser work → Cousin handles this');
+      if (t > 130 && t < 200) { drawCaption('This needs a browser — Proctor sends it to Cousin via MCP protocol', cx, H * 0.12, C.cousin, 15); highlight('cousin'); }
+      if (t === 150) { sendPacket('proctor', 'cousin', 'MCP TASK', C.cousin, 0.012); addPulse('cousin', C.cousin); }
+      if (t > 200 && t < 320) { drawCaption('Cousin opens a headless browser, logs into Kantime, scrapes the data', cx, H * 0.12, C.cousin, 15); drawWorkingIndicator(teammates.cousin, t); drawBrowserWindow(teammates.cousin.x + 60, teammates.cousin.y - 20, t - 200); }
+      if (t === 300) sendPacket('cousin', 'proctor', 'PATIENT DATA', C.cousin, 0.012);
+      if (t > 340) { drawCaption('Data flows back through Proctor → formatted and delivered to Silas', cx, H * 0.12, C.accent, 15); if (t === 360) sendPacket('proctor', 'silas', '"Census ready ✓"', C.proctor, 0.015); }
+    }
+  },
+  {
+    name: 'EXAMPLE: DOCUMENTS & CODE', duration: 480,
+    setup() { unhighlightAll(); highlight('silas'); highlight('proctor'); },
+    run(t) {
+      drawAllTeammates();
+      if (t < 70) drawCaption('EXAMPLE: Silas needs an A/R report AND a quick data transform script', cx, H * 0.12, C.silas, 15);
+      if (t === 30) sendPacket('silas', 'proctor', '"Report + script needed"', C.silas, 0.015);
+      if (t > 80 && t < 160) drawThinkBubble(teammates.proctor, 'Two tasks → Sister + Step Brother');
+      if (t > 140 && t < 220) { drawCaption('Proctor splits the work — document to Sister, code to Step Brother', cx, H * 0.12, C.text, 15); highlight('sister'); highlight('stepbro'); }
+      if (t === 160) { sendPacket('proctor', 'sister', 'DOC TASK', C.sister, 0.012); sendPacket('proctor', 'stepbro', 'CODE TASK', C.stepbro, 0.012); }
+      if (t > 210 && t < 350) { drawCaption('They work in PARALLEL — same Desktop app, different tabs', cx, H * 0.12, C.accent, 15); drawWorkingIndicator(teammates.sister, t); drawWorkingIndicator(teammates.stepbro, t); drawDesktopGroup(t - 210); }
+      if (t === 330) { sendPacket('sister', 'proctor', '.DOCX READY', C.sister, 0.012); sendPacket('stepbro', 'proctor', 'SCRIPT READY', C.stepbro, 0.012); }
+      if (t > 380) { drawCaption('Both deliverables arrive → Proctor combines and presents to Silas', cx, H * 0.12, C.accent, 15); if (t === 400) sendPacket('proctor', 'silas', '"All done ✓"', C.proctor, 0.015); }
+    }
+  },
+  {
+    name: '"HEY TEAM" — FULL ACTIVATION', duration: 520,
+    setup() { unhighlightAll(); highlight('silas'); },
+    run(t) {
+      drawAllTeammates();
+      if (t < 80) { drawCaption('When Silas says "hey team" or "let\'s" or "we need"...', cx, H * 0.12, C.silas, 16); if (t > 20) drawSpeechBubble(teammates.silas.x + 70, teammates.silas.y - 40, '"Hey team, we need to..."', C.silas, Math.min((t-20)/20, 1)); }
+      if (t > 80 && t < 160) { drawCaption('Proctor goes into FULL COORDINATION MODE', cx, H * 0.12, C.proctor, 16); highlight('proctor'); addPulse('proctor', C.proctor); if (t === 85) pulseRings.push({ x: teammates.proctor.x, y: teammates.proctor.y, r: 20, maxR: 200, color: C.proctor, alpha: 0.4 }); }
+      if (t > 140 && t < 220) { drawCaption('First: Is Brother running? If not → Proctor cold-starts him via PowerShell', cx, H * 0.12, C.brother, 14); if (t > 160 && t < 200) drawCallout(teammates.brother.x, teammates.brother.y - 65, 'Start-Process WindowsTerminal → claude-auto.cmd', C.brother); if (t === 170) { sendPacket('proctor', 'brother', 'COLD START', C.wmcp, 0.015); addPulse('brother', C.brother); highlight('brother'); } }
+      if (t > 220 && t < 350) { drawCaption('Then Proctor distributes tasks across the WHOLE team simultaneously', cx, H * 0.12, C.accent, 15); highlight('brother'); highlight('stepbro'); highlight('sister'); highlight('cousin'); if (t === 240) { sendPacket('proctor', 'brother', 'DB TASKS', C.brother, 0.01); sendPacket('proctor', 'sister', 'DOC TASKS', C.sister, 0.011); sendPacket('proctor', 'stepbro', 'CODE TASKS', C.stepbro, 0.012); sendPacket('proctor', 'cousin', 'WEB TASKS', C.cousin, 0.013); } }
+      if (t > 300 && t < 420) { Object.keys(teammates).forEach(id => { if (id !== 'silas') drawWorkingIndicator(teammates[id], t); }); drawCaption('Everyone works in parallel — Proctor monitors ALL of them', cx, H * 0.12, C.text, 15); }
+      if (t > 400) { drawCaption('Results converge back through Proctor → synthesized for Silas', cx, H * 0.12, C.archive, 15); if (t === 410) { sendPacket('brother', 'proctor', '✓', C.brother, 0.012); sendPacket('sister', 'proctor', '✓', C.sister, 0.013); sendPacket('stepbro', 'proctor', '✓', C.stepbro, 0.014); sendPacket('cousin', 'proctor', '✓', C.cousin, 0.015); } if (t === 460) sendPacket('proctor', 'silas', 'ALL COMPLETE ✓', C.proctor, 0.015); }
+    }
+  },
+  {
+    name: 'THE BRIDGE — WINDOWS-MCP', duration: 400,
+    setup() { unhighlightAll(); highlight('proctor'); },
+    run(t) {
+      drawAllTeammates();
+      if (t < 80) drawCaption('How do they actually TALK to each other?', cx, H * 0.12, C.text, 18);
+      if (t > 60 && t < 180) { drawCaption('Windows-MCP — the NON-NEGOTIABLE bridge that connects everything', cx, H * 0.12, C.wmcp, 16); ['brother', 'stepbro', 'sister', 'cousin'].forEach((id, i) => { if (t > 80 + i * 20) drawBridge(teammates.proctor, teammates[id], 'Windows-MCP', C.wmcp, Math.min((t - 80 - i*20)/30, 1)); }); }
+      if (t > 180 && t < 260) { drawCaption("Proctor TYPES into Brother's terminal — like a human would, but automated", cx, H * 0.12, C.brother, 15); drawTypingAnimation(teammates.proctor, teammates.brother, t - 180); if (t % 15 === 0) sendPacket('proctor', 'brother', '⌨️', C.wmcp, 0.02); }
+      if (t > 260 && t < 340) { drawCaption('It can also take snapshots, click buttons, read screens — full desktop control', cx, H * 0.12, C.accent, 15); ['Type Commands', 'Read Output', 'Take Snapshots', 'Launch Apps', 'Monitor Status'].forEach((cap, i) => { if (t > 270 + i * 12) { ctx.globalAlpha = Math.min((t - 270 - i*12)/15, 1); ctx.font = '12px system-ui'; ctx.fillStyle = C.wmcp; ctx.textAlign = 'center'; ctx.fillText('● ' + cap, cx, H * 0.22 + i * 20); ctx.globalAlpha = 1; } }); }
+      if (t > 340) { drawCaption('First thing EVERY session: Proctor verifies Windows-MCP is connected', cx, H * 0.12, '#ef4444', 15); drawCallout(teammates.proctor.x, teammates.proctor.y - 75, 'If missing → ALERT Silas immediately', '#ef4444'); }
+    }
+  },
+  {
+    name: 'SHARED MEMORY — ARCHIVES', duration: 480,
+    setup() { unhighlightAll(); },
+    run(t) {
+      drawAllTeammates();
+      const archiveX = cx, archiveY = cy + 10;
+      if (t > 20) { ctx.globalAlpha = Math.min((t - 20) / 30, 1); drawArchiveIcon(archiveX, archiveY - 130, Math.min((t-20)/30,1)); ctx.globalAlpha = 1; }
+      if (t < 80) drawCaption("How does everyone know what's going on? THE ARCHIVE SYSTEM", cx, H * 0.1, C.archive, 16);
+      if (t > 80 && t < 180) { drawCaption("claude-archive.md — the team's shared long-term memory", cx, H * 0.1, C.archive, 15); ['proctor', 'brother', 'stepbro', 'sister', 'cousin'].forEach((id, i) => { if (t > 90 + i * 15) drawDashedLine({x: archiveX, y: archiveY - 130}, teammates[id], C.archive, Math.min((t-90-i*15)/20, 0.4)); }); }
+      if (t > 180 && t < 280) { drawCaption('Proctor MUST update it at 50% context AND end of every chat', cx, H * 0.1, C.proctor, 15); highlight('proctor'); if (t === 200) sendPacket('proctor', 'proctor', 'ARCHIVE UPDATE', C.archive, 0.008); [{ name: 'claude-archive.md', desc: 'Long-term memory', y: 0 }, { name: 'session-state.md', desc: 'Current session', y: 24 }, { name: 'briefing-proctor.md', desc: 'Startup briefing', y: 48 }].forEach((f, i) => { if (t > 200 + i * 20) { ctx.globalAlpha = Math.min((t - 200 - i*20)/15, 1); ctx.font = 'bold 11px Consolas, monospace'; ctx.fillStyle = C.archive; ctx.textAlign = 'center'; ctx.fillText(f.name, cx, cy - 60 + f.y); ctx.font = '10px system-ui'; ctx.fillStyle = C.dim; ctx.fillText(f.desc, cx, cy - 47 + f.y); ctx.globalAlpha = 1; } }); }
+      if (t > 280 && t < 380) { drawCaption('This is how a new session picks up where the last one left off', cx, H * 0.1, C.accent, 15); drawCaption('Every teammate reads these files → instant context', cx, H * 0.1 + 24, C.dim, 13); }
+      if (t > 380) { drawCaption('At 80% context usage → Proctor alerts Silas to wrap up or start fresh', cx, H * 0.1, '#ef4444', 15); drawContextMeter(cx, cy - 80, 0.82, t - 380); }
+    }
+  },
+  {
+    name: 'STARTUP — EVERY SESSION', duration: 480,
+    setup() { unhighlightAll(); highlight('proctor'); },
+    run(t) {
+      drawAllTeammates();
+      if (t < 50) drawCaption('Every new session follows the STARTUP PROTOCOL', cx, H * 0.1, C.text, 18);
+      [{ t: 50, text: '① Read claude-archive.md (last 200 lines)', icon: '📖', color: C.archive },
+       { t: 110, text: '② Read session-state.md', icon: '📊', color: C.accent },
+       { t: 170, text: '③ Read briefing-proctor.md', icon: '📋', color: C.sister },
+       { t: 230, text: '④ Verify Windows-MCP is connected', icon: '🔌', color: C.wmcp },
+       { t: 290, text: '⑤ If missing → ALERT Silas immediately', icon: '🚨', color: '#ef4444' },
+       { t: 350, text: '⑥ NOW respond to first message', icon: '✅', color: C.archive }
+      ].forEach((step, i) => {
+        if (t > step.t) {
+          const a = Math.min((t - step.t) / 25, 1); const yPos = H * 0.18 + i * 36;
+          ctx.globalAlpha = a; ctx.fillStyle = C.panel + '80'; ctx.beginPath(); ctx.roundRect(cx - 220, yPos - 12, 440, 28, 6); ctx.fill();
+          ctx.font = '14px system-ui'; ctx.fillStyle = step.color; ctx.textAlign = 'center'; ctx.fillText(step.icon + '  ' + step.text, cx, yPos + 4);
+          ctx.globalAlpha = 1; if (t === step.t + 1) addPulse('proctor', step.color);
+        }
+      });
+      if (t > 420) drawCaption('No reply until ALL steps complete — no exceptions', cx, H * 0.88, C.accent, 14);
+    }
+  },
+  {
+    name: 'THE COMPLETE PICTURE', duration: 600,
+    setup() { unhighlightAll(); Object.keys(teammates).forEach(id => highlight(id)); },
+    run(t) {
+      drawAllTeammates();
+      [['proctor','brother'],['proctor','sister'],['proctor','stepbro'],['proctor','cousin'],['silas','proctor']].forEach(([a,b]) => drawDashedLine(teammates[a], teammates[b], C.wmcp, 0.25));
+      if (t < 100) drawCaption('THE COMPLETE SYSTEM', cx, H * 0.08, C.text, 22);
+      if (t > 50 && t % 30 === 0) { const targets = ['brother','sister','stepbro','cousin']; sendPacket('proctor', targets[Math.floor(Math.random()*targets.length)], '', C.proctor, 0.01); }
+      if (t > 50 && t % 45 === 0) { const sources = ['brother','sister','stepbro','cousin']; const s = sources[Math.floor(Math.random()*sources.length)]; sendPacket(s, 'proctor', '', teammates[s].color, 0.01); }
+      if (t > 50 && t % 60 === 0) sendPacket('silas', 'proctor', '', C.silas, 0.012);
+      if (t > 50 && t % 70 === 0) sendPacket('proctor', 'silas', '', C.proctor, 0.012);
+      [{ t: 80, id: 'silas', text: 'Gives tasks, receives results' }, { t: 120, id: 'proctor', text: 'Routes, monitors, archives' }, { t: 160, id: 'brother', text: 'Heavy code, DB, infrastructure' }, { t: 200, id: 'stepbro', text: 'Quick code in Desktop' }, { t: 240, id: 'sister', text: 'Docs, files, batch work' }, { t: 280, id: 'cousin', text: 'Web scraping, browser tasks' }].forEach(s => { if (t > s.t) { ctx.globalAlpha = Math.min((t - s.t) / 20, 1); drawCallout(teammates[s.id].x, teammates[s.id].y + 55, s.text, teammates[s.id].color); ctx.globalAlpha = 1; } });
+      if (t > 380) {
+        ctx.globalAlpha = Math.min((t - 380) / 30, 1);
+        ctx.fillStyle = C.panel + 'cc'; ctx.beginPath(); ctx.roundRect(cx - 200, H * 0.86, 400, 56, 10); ctx.fill();
+        ctx.strokeStyle = C.wmcp + '60'; ctx.lineWidth = 1; ctx.stroke();
+        ctx.font = 'bold 13px system-ui'; ctx.fillStyle = C.wmcp; ctx.textAlign = 'center';
+        ctx.fillText('Connected by Windows-MCP • Synchronized by Archives', cx, H * 0.86 + 20);
+        ctx.font = '12px system-ui'; ctx.fillStyle = C.dim;
+        ctx.fillText('100% quality, 100% of the time — the Prime Directive', cx, H * 0.86 + 40);
+        ctx.globalAlpha = 1;
+      }
+    }
+  },
+];
+
+function drawTeammate(m, dimmed, alpha) {
+  const a = alpha !== undefined ? alpha : 1;
+  const isHL = highlights[Object.keys(teammates).find(k => teammates[k] === m)] || 0;
+  const glow = isHL ? 0.12 : 0.04;
+  const grad = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, 60);
+  grad.addColorStop(0, m.color + Math.round(glow * a * 255).toString(16).padStart(2,'0'));
+  grad.addColorStop(1, m.color + '00');
+  ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(m.x, m.y, 60, 0, Math.PI * 2); ctx.fill();
+  const sz = m === teammates.proctor ? 40 : m === teammates.silas ? 34 : 32;
+  ctx.beginPath(); ctx.arc(m.x, m.y, sz, 0, Math.PI * 2); ctx.fillStyle = C.bg; ctx.fill();
+  ctx.strokeStyle = m.color + (isHL ? 'cc' : '60'); ctx.lineWidth = isHL ? 3 : 2; ctx.stroke();
+  ctx.beginPath(); ctx.arc(m.x, m.y, sz - 3, 0, Math.PI * 2); ctx.fillStyle = m.color + '12'; ctx.fill();
+  ctx.font = `${sz * 0.7}px serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(m.emoji, m.x, m.y - 1);
+  ctx.font = `bold ${m === teammates.proctor ? 12 : 10}px system-ui`; ctx.fillStyle = m.color; ctx.textBaseline = 'top'; ctx.fillText(m.label, m.x, m.y + sz + 6);
+  ctx.font = '9px system-ui'; ctx.fillStyle = C.dim; ctx.fillText(m.sub, m.x, m.y + sz + 20);
+}
+function drawAllTeammates() { Object.values(teammates).forEach(m => drawTeammate(m)); }
+function drawAnimatedLine(from, to, color, t, label) {
+  const progress = Math.min(t / 40, 1);
+  ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo(from.x + (to.x - from.x) * progress, from.y + (to.y - from.y) * progress);
+  ctx.strokeStyle = color + '80'; ctx.lineWidth = 2; ctx.stroke();
+  if (progress >= 1 && label) { ctx.font = '10px system-ui'; ctx.fillStyle = color; ctx.textAlign = 'center'; ctx.fillText(label, (from.x+to.x)/2, (from.y+to.y)/2 - 10); }
+}
+function drawDashedLine(from, to, color, alpha) {
+  ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo(to.x, to.y);
+  ctx.strokeStyle = color + Math.round(alpha * 255).toString(16).padStart(2,'0');
+  ctx.lineWidth = 1.5; ctx.setLineDash([6, 4]); ctx.stroke(); ctx.setLineDash([]);
+}
+function drawBridge(from, to, label, color, progress) {
+  const mx = (from.x + to.x) / 2, my = (from.y + to.y) / 2;
+  ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo(to.x, to.y);
+  ctx.strokeStyle = color + Math.round(progress * 0.5 * 255).toString(16).padStart(2,'0'); ctx.lineWidth = 4; ctx.stroke();
+  ctx.globalAlpha = progress; ctx.fillStyle = C.panel + 'ee'; ctx.beginPath(); ctx.roundRect(mx - 50, my - 12, 100, 24, 6); ctx.fill();
+  ctx.strokeStyle = color + '80'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.font = 'bold 10px system-ui'; ctx.fillStyle = color; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(label, mx, my); ctx.globalAlpha = 1;
+}
+function drawThinkBubble(m, text) {
+  const bx = m.x, by = m.y - 70;
+  ctx.fillStyle = C.panel + 'ee'; ctx.beginPath(); ctx.roundRect(bx - 120, by - 14, 240, 28, 8); ctx.fill();
+  ctx.strokeStyle = m.color + '60'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(bx - 6, by + 14); ctx.lineTo(bx + 6, by + 14); ctx.lineTo(bx, by + 24); ctx.fillStyle = C.panel + 'ee'; ctx.fill();
+  ctx.font = '12px system-ui'; ctx.fillStyle = C.accent; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('💭 ' + text, bx, by);
+}
+function drawCallout(x, y, text, color) {
+  ctx.font = '11px system-ui'; const w = ctx.measureText(text).width + 16;
+  ctx.fillStyle = C.panel + 'dd'; ctx.beginPath(); ctx.roundRect(x - w/2, y - 10, w, 20, 5); ctx.fill();
+  ctx.fillStyle = color; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, x, y);
+}
+function drawCaption(text, x, y, color, size) {
+  ctx.font = `${size || 15}px system-ui`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = C.bg + 'cc'; const w = ctx.measureText(text).width + 30; ctx.fillRect(x - w/2, y - (size||15)/2 - 6, w, (size||15) + 12);
+  ctx.fillStyle = color || C.text; ctx.fillText(text, x, y);
+}
+function drawWorkingIndicator(m, t) {
+  const dots = '●●●'; ctx.font = '10px system-ui'; ctx.fillStyle = m.color; ctx.textAlign = 'center';
+  ctx.fillText(dots.substring(0, Math.floor(t / 10) % 4), m.x, m.y - 48);
+}
+function drawSpeechBubble(x, y, text, color, alpha) {
+  ctx.globalAlpha = alpha; ctx.fillStyle = color + '20'; ctx.beginPath(); ctx.roundRect(x - 10, y - 14, ctx.measureText(text).width + 30, 28, 8); ctx.fill();
+  ctx.strokeStyle = color + '60'; ctx.lineWidth = 1; ctx.stroke(); ctx.font = '12px system-ui'; ctx.fillStyle = color; ctx.textAlign = 'left'; ctx.fillText(text, x + 4, y + 2); ctx.globalAlpha = 1;
+}
+function drawBrowserWindow(x, y, t) {
+  const a = Math.min(t / 20, 1); ctx.globalAlpha = a;
+  ctx.fillStyle = '#1a1a2e'; ctx.beginPath(); ctx.roundRect(x, y, 70, 50, 4); ctx.fill();
+  ctx.strokeStyle = C.cousin + '60'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.fillStyle = '#252540'; ctx.fillRect(x, y, 70, 12);
+  ctx.fillStyle = C.cousin; ctx.font = '7px system-ui'; ctx.textAlign = 'left'; ctx.fillText('🌐 Kantime Health', x + 4, y + 9);
+  ctx.fillStyle = C.cousin + '80'; ctx.fillRect(x + 2, y + 14, Math.min(t / 80, 1) * 66, 2); ctx.globalAlpha = 1;
+}
+function drawDesktopGroup(t) {
+  const a = Math.min(t / 20, 0.6); ctx.globalAlpha = a;
+  const pts = [teammates.proctor, teammates.sister, teammates.stepbro];
+  const minX = Math.min(...pts.map(p=>p.x)) - 60, maxX = Math.max(...pts.map(p=>p.x)) + 60;
+  const minY = Math.min(...pts.map(p=>p.y)) - 55, maxY = Math.max(...pts.map(p=>p.y)) + 55;
+  ctx.strokeStyle = C.dim; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+  ctx.beginPath(); ctx.roundRect(minX, minY, maxX-minX, maxY-minY, 12); ctx.stroke(); ctx.setLineDash([]);
+  ctx.font = '10px system-ui'; ctx.fillStyle = C.dim; ctx.textAlign = 'center';
+  ctx.fillText('Same Claude Desktop Window', (minX+maxX)/2, maxY + 14); ctx.globalAlpha = 1;
+}
+function drawArchiveIcon(x, y, alpha) {
+  ctx.globalAlpha = alpha; ctx.fillStyle = C.archive + '20'; ctx.beginPath(); ctx.roundRect(x-35, y-20, 70, 40, 8); ctx.fill();
+  ctx.strokeStyle = C.archive + '80'; ctx.lineWidth = 2; ctx.stroke();
+  ctx.font = '20px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('🗄️', x, y); ctx.globalAlpha = 1;
+}
+function drawContextMeter(x, y, pct, t) {
+  const a = Math.min(t / 20, 1); ctx.globalAlpha = a; const w = 200, h = 16;
+  ctx.fillStyle = C.panel; ctx.beginPath(); ctx.roundRect(x-w/2, y, w, h, 4); ctx.fill();
+  ctx.fillStyle = (pct > 0.8 ? '#ef4444' : '#f59e0b') + '80'; ctx.beginPath(); ctx.roundRect(x-w/2+2, y+2, (w-4)*pct, h-4, 3); ctx.fill();
+  ctx.font = 'bold 10px system-ui'; ctx.fillStyle = C.text; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(`Context: ${Math.round(pct*100)}% — TIME TO ALERT`, x, y + h/2); ctx.globalAlpha = 1;
+}
+function drawTypingAnimation(from, to, t) {
+  const mx = (from.x+to.x)/2, my = (from.y+to.y)/2;
+  const chars = 'ALTER TABLE patients ADD COLUMN...'; const shown = chars.substring(0, Math.floor(t / 3));
+  ctx.fillStyle = C.panel + 'ee'; ctx.beginPath(); ctx.roundRect(mx-120, my-12, 240, 24, 6); ctx.fill();
+  ctx.strokeStyle = C.wmcp + '40'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.font = '11px Consolas, monospace'; ctx.fillStyle = C.wmcp; ctx.textAlign = 'center';
+  ctx.fillText('⌨️ ' + shown + (t % 20 < 10 ? '█' : ''), mx, my + 1);
+}
+
+function resize() {
+  W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; cx = W/2; cy = H/2;
+  const r = Math.min(W, H) * 0.3;
+  teammates.silas.x = cx; teammates.silas.y = cy - r * 0.85;
+  teammates.proctor.x = cx; teammates.proctor.y = cy;
+  teammates.brother.x = cx - r * 0.95; teammates.brother.y = cy + r * 0.6;
+  teammates.stepbro.x = cx + r * 0.95; teammates.stepbro.y = cy + r * 0.6;
+  teammates.sister.x = cx - r * 0.85; teammates.sister.y = cy - r * 0.35;
+  teammates.cousin.x = cx + r * 0.85; teammates.cousin.y = cy - r * 0.35;
+}
+
+function loop() {
+  if (!playing) { requestAnimationFrame(loop); return; }
+  time++; sceneTime++; ctx.clearRect(0, 0, W, H);
+  ctx.strokeStyle = '#1e293b15'; ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 50) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 50) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  const scene = SCENES[sceneIndex];
+  if (scene) { scene.run(sceneTime); if (sceneTime >= scene.duration) skipScene(1); }
+  packets.forEach(p => {
+    p.trail.push({x:p.x,y:p.y}); if (p.trail.length > 15) p.trail.shift();
+    p.progress += p.speed; p.x += (p.tx-p.x)*p.speed*2; p.y += (p.ty-p.y)*p.speed*2;
+    if (Math.hypot(p.x-p.tx, p.y-p.ty) < 8) { p.alive = false; return; }
+    p.trail.forEach((t,i) => { const a=(i/p.trail.length)*0.35; ctx.beginPath(); ctx.arc(t.x,t.y,p.size*(i/p.trail.length),0,Math.PI*2); ctx.fillStyle=p.color+Math.round(a*255).toString(16).padStart(2,'0'); ctx.fill(); });
+    const grd=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.size*4); grd.addColorStop(0,p.color+'40'); grd.addColorStop(1,p.color+'00'); ctx.fillStyle=grd; ctx.beginPath(); ctx.arc(p.x,p.y,p.size*4,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fillStyle=p.color; ctx.fill();
+    if (p.label) { ctx.font='9px system-ui'; ctx.fillStyle=p.color; ctx.textAlign='center'; ctx.fillText(p.label,p.x,p.y-12); }
+  });
+  packets = packets.filter(p => p.alive);
+  pulseRings.forEach(r => { r.r+=1.2; r.alpha*=0.97; ctx.beginPath(); ctx.arc(r.x,r.y,r.r,0,Math.PI*2); ctx.strokeStyle=r.color+Math.round(r.alpha*255).toString(16).padStart(2,'0'); ctx.lineWidth=2; ctx.stroke(); });
+  pulseRings = pulseRings.filter(r => r.alpha > 0.01);
+  const totalDuration = SCENES.reduce((s,sc) => s+sc.duration, 0);
+  const elapsed = SCENES.slice(0,sceneIndex).reduce((s,sc) => s+sc.duration, 0) + sceneTime;
+  document.getElementById('progress-bar').style.width = (elapsed/totalDuration*100)+'%';
+  document.getElementById('scene-label').textContent = scene ? `SCENE ${sceneIndex+1} / ${SCENES.length} — ${scene.name}` : '';
+  requestAnimationFrame(loop);
+}
+
+function skipScene(dir) {
+  sceneIndex = Math.max(0, Math.min(SCENES.length-1, sceneIndex+dir)); sceneTime = 0;
+  packets = []; pulseRings = []; floatingTexts = []; unhighlightAll();
+  if (SCENES[sceneIndex].setup) SCENES[sceneIndex].setup();
+}
+function restart() {
+  sceneIndex = 0; sceneTime = 0; packets = []; pulseRings = []; unhighlightAll();
+  if (SCENES[0].setup) SCENES[0].setup(); playing = true;
+  document.getElementById('playBtn').textContent = '⏸ Pause';
+  document.getElementById('playBtn').classList.add('active');
+}
+function togglePlay() {
+  playing = !playing; const btn = document.getElementById('playBtn');
+  btn.textContent = playing ? '⏸ Pause' : '▶ Play'; btn.classList.toggle('active', playing);
+}
+
+window.addEventListener('resize', resize); resize();
+if (SCENES[0].setup) SCENES[0].setup(); loop();
+</script>
+</body>
+</html>
