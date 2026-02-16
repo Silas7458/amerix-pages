@@ -11,44 +11,106 @@
             background: #0a1628;
             color: #e2e8f0;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
-        .container {
+        header {
             text-align: center;
-            max-width: 600px;
-            padding: 2rem;
+            padding: 3rem 2rem 1.5rem;
         }
         h1 {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 700;
-            margin-bottom: 0.5rem;
             background: linear-gradient(135deg, #60a5fa, #a78bfa);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        p {
+        header p {
             color: #94a3b8;
-            font-size: 1.1rem;
-            line-height: 1.6;
+            font-size: 1.05rem;
+            margin-top: 0.5rem;
         }
-        .badge {
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .card {
+            background: #111d33;
+            border: 1px solid #1e3050;
+            border-radius: 12px;
+            padding: 1.8rem;
+            transition: border-color 0.2s, transform 0.2s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .card:hover {
+            border-color: #60a5fa;
+            transform: translateY(-3px);
+        }
+        .card-tag {
             display: inline-block;
-            margin-top: 1.5rem;
-            padding: 0.4rem 1rem;
-            border: 1px solid #334155;
-            border-radius: 999px;
-            font-size: 0.85rem;
-            color: #64748b;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            margin-bottom: 0.8rem;
+        }
+        .tag-live { background: #064e3b; color: #6ee7b7; }
+        .tag-wip { background: #422006; color: #fbbf24; }
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .card p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .card-arrow {
+            display: inline-block;
+            margin-top: 1rem;
+            color: #60a5fa;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        footer {
+            text-align: center;
+            padding: 3rem 2rem 2rem;
+            color: #475569;
+            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <header>
         <h1>Amerix Medical Consulting</h1>
-        <p>Shared visualizations, dashboards, and interactive content.</p>
-        <span class="badge">Published projects will appear here</span>
+        <p>Visualizations, dashboards, and interactive tools</p>
+    </header>
+
+    <div class="grid">
+        <a class="card" href="tandem-team.html">
+            <span class="card-tag tag-live">Live</span>
+            <h2>Tandem Team</h2>
+            <p>Interactive visualization of the AI team — roles, workflows, communication flows, and how agents collaborate in real time.</p>
+            <span class="card-arrow">View &rarr;</span>
+        </a>
+
+        <div class="card">
+            <span class="card-tag tag-wip">In Progress</span>
+            <h2>Amerix Development Toolkit</h2>
+            <p>The full landscape of tools, MCP servers, n8n workflows, memory systems, and infrastructure powering Amerix development.</p>
+            <span class="card-arrow" style="color: #fbbf24;">Coming soon</span>
+        </div>
     </div>
+
+    <footer>
+        Amerix Medical Consulting, LLC &mdash; Built by the Tandem Family Team
+    </footer>
 </body>
 </html>
