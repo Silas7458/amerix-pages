@@ -20,6 +20,9 @@
   }
 
   body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+  #back-nav { position: fixed; top: 16px; left: 20px; z-index: 200; }
+  #back-nav a { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border); background: rgba(14,18,37,0.85); color: var(--text-dim); text-decoration: none; font-size: 13px; font-weight: 500; backdrop-filter: blur(8px); transition: border-color 0.2s, color 0.2s; }
+  #back-nav a:hover { border-color: var(--blue); color: var(--text); }
   body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(59,130,246,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.02) 1px, transparent 1px); background-size: 48px 48px; pointer-events: none; }
   .page { position: relative; z-index: 1; max-width: 1340px; margin: 0 auto; padding: 40px 28px 80px; }
 
@@ -180,6 +183,7 @@
 </style>
 </head>
 <body>
+<div id="back-nav"><a href="index.html">&larr; Amerix Home</a></div>
 <div class="page">
 
   <div class="header">
