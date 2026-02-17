@@ -188,7 +188,7 @@
 
   <div class="header">
     <h1>🏗️ Amerix Development Toolkit</h1>
-    <div class="sub">v8 — updated Feb 16, 2026 · 5-agent tandem team, team memory system, GitHub Pages, optimized tool stack</div>
+    <div class="sub">v8.1 — updated Feb 16, 2026 · 5-agent tandem team, team memory system (20-min briefings), GitHub Pages, optimized tool stack</div>
   </div>
 
   <div class="hub">
@@ -237,8 +237,8 @@
 
     <div class="info-boxes">
       <div class="info-box ib-rose"><h4>🗄️ CC-v3 Memory</h4><p>17+ lessons stored with embeddings. PostgreSQL + pgvector backend. Hybrid vector + BM25 search. Memory API on port 8100 (manual start via start-memory-api.cmd). Replaced Knowledge Graph for better search.</p></div>
-      <div class="info-box ib-rose"><h4>⚡ 6 n8n Workflows</h4><p>Lesson extraction from activity logs, knowledge store writes, role-specific briefing generation (proctor, brother, sister), weekly memory audit. All active on port 5678.</p></div>
-      <div class="info-box ib-rose"><h4>📋 Morning Briefings</h4><p>Auto-generated files at claude-context/briefings/: briefing-proctor.md, briefing-brother.md, briefing-sister.md. Compact, role-specific, pre-computed. Replaces bulk archive loading.</p></div>
+      <div class="info-box ib-rose"><h4>⚡ 6 n8n Workflows</h4><p>Lesson extraction (every 20 min), briefing generation (every 20 min), knowledge store writes, weekly memory audit. All active on port 5678.</p></div>
+      <div class="info-box ib-rose"><h4>📋 Briefings (every 20 min)</h4><p>Auto-generated files at claude-context/briefings/: briefing-proctor.md, briefing-brother.md, briefing-sister.md. Compact, role-specific, pre-computed. Refreshed every 20 minutes — not stale morning snapshots.</p></div>
       <div class="info-box ib-rose"><h4>🔄 Closed Loop</h4><p>Agents log → n8n extracts → CC-v3 stores → n8n generates briefings → agents read. No manual discipline required. Automated write side solves the discipline problem.</p></div>
     </div>
   </div>
