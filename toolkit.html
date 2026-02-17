@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amerix Development Toolkit — Full Landscape v7</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #080c16; --surface: #0e1225; --surface2: #141829; --surface3: #181d34;
+    --border: #1a2040; --border-hover: #2a3568;
+    --text: #c8cce0; --text-dim: #5a6088; --text-muted: #3d4268;
+    --amber: #f59e0b; --amber-dim: #92762a;
+    --blue: #3b82f6; --purple: #a78bfa; --green: #34d399; --red: #f87171;
+    --teal: #2dd4bf; --cyan: #22d3ee; --pink: #f472b6; --orange: #fb923c;
+    --yellow: #facc15; --lime: #a3e635; --indigo: #818cf8; --rose: #fb7185;
+  }
+
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+  #back-nav { position: fixed; top: 16px; left: 20px; z-index: 200; }
+  #back-nav a { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border); background: rgba(14,18,37,0.85); color: var(--text-dim); text-decoration: none; font-size: 13px; font-weight: 500; backdrop-filter: blur(8px); transition: border-color 0.2s, color 0.2s; }
+  #back-nav a:hover { border-color: var(--blue); color: var(--text); }
+  body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(59,130,246,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.02) 1px, transparent 1px); background-size: 48px 48px; pointer-events: none; }
+  .page { position: relative; z-index: 1; max-width: 1340px; margin: 0 auto; padding: 40px 28px 80px; }
+
+  .header { text-align: center; margin-bottom: 52px; }
+  .header h1 { font-size: 30px; font-weight: 700; color: #fff; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .header .sub { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-dim); }
+
+  .hub { display: flex; justify-content: center; margin-bottom: 44px; }
+  .hub-card { background: linear-gradient(135deg, var(--surface2), var(--surface)); border: 2px solid var(--amber); border-radius: 16px; padding: 28px 48px; text-align: center; box-shadow: 0 0 60px rgba(245,158,11,0.08); animation: hubGlow 5s ease-in-out infinite; }
+  @keyframes hubGlow { 0%,100% { box-shadow: 0 0 60px rgba(245,158,11,0.08); } 50% { box-shadow: 0 0 80px rgba(245,158,11,0.15); } }
+  .hub-card .emoji { font-size: 36px; margin-bottom: 6px; }
+  .hub-card h2 { font-size: 22px; font-weight: 700; color: var(--amber); }
+  .hub-card .role { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--amber-dim); margin-top: 4px; }
+
+  .tier { margin-bottom: 52px; }
+  .tier-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .tier-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); white-space: nowrap; }
+  .tier-line { flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+  .tier-desc { font-size: 13px; color: var(--text-dim); margin-bottom: 18px; font-style: italic; padding-left: 2px; }
+
+  .grid { display: grid; gap: 16px; }
+  .g2 { grid-template-columns: repeat(2, 1fr); }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .g4 { grid-template-columns: repeat(4, 1fr); }
+  .g5 { grid-template-columns: repeat(5, 1fr); }
+
+  .card { background: linear-gradient(150deg, var(--surface2), var(--surface)); border: 1.5px solid var(--border); border-radius: 12px; padding: 20px; position: relative; overflow: hidden; transition: all 0.3s ease; cursor: default; opacity: 0; transform: translateY(12px); animation: cardIn 0.4s ease forwards; }
+  .card:hover { transform: translateY(-3px); border-color: var(--border-hover); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+  @keyframes cardIn { to { opacity: 1; transform: translateY(0); } }
+  .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 12px 12px 0 0; }
+
+  .card .card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .card .icon-box { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 19px; flex-shrink: 0; }
+  .card h3 { font-size: 14px; font-weight: 600; color: #e8ecf4; line-height: 1.2; }
+  .card .card-type { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+  .card .analogy { font-size: 12.5px; color: var(--amber); font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .card .analogy::before { content: '⟶'; font-size: 10px; opacity: 0.5; }
+  .card .desc { font-size: 12.5px; color: #7e84aa; line-height: 1.6; margin-bottom: 12px; }
+  .card .tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .card .tag { font-family: 'JetBrains Mono', monospace; font-size: 9px; padding: 3px 8px; border-radius: 4px; background: rgba(99,102,241,0.06); color: var(--text-dim); border: 1px solid rgba(99,102,241,0.08); }
+  .card .stars { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--yellow); position: absolute; top: 12px; right: 14px; }
+
+  /* Color themes */
+  .c-amber::before { background: linear-gradient(90deg, #d97706, #f59e0b); } .c-amber .icon-box { background: rgba(245,158,11,0.1); } .c-amber .tag { background: rgba(245,158,11,0.06); border-color: rgba(245,158,11,0.12); color: var(--amber-dim); }
+  .c-blue::before { background: linear-gradient(90deg, #2563eb, #3b82f6); } .c-blue .icon-box { background: rgba(59,130,246,0.1); } .c-blue .tag { background: rgba(59,130,246,0.06); border-color: rgba(59,130,246,0.12); color: #5580b8; }
+  .c-purple::before { background: linear-gradient(90deg, #7c3aed, #a78bfa); } .c-purple .icon-box { background: rgba(167,139,250,0.1); } .c-purple .tag { background: rgba(167,139,250,0.06); border-color: rgba(167,139,250,0.12); color: #8878b0; }
+  .c-green::before { background: linear-gradient(90deg, #059669, #34d399); } .c-green .icon-box { background: rgba(52,211,153,0.1); } .c-green .tag { background: rgba(52,211,153,0.06); border-color: rgba(52,211,153,0.12); color: #4a9a80; }
+  .c-teal::before { background: linear-gradient(90deg, #0d9488, #2dd4bf); } .c-teal .icon-box { background: rgba(45,212,191,0.1); } .c-teal .tag { background: rgba(45,212,191,0.06); border-color: rgba(45,212,191,0.12); color: #4a9a92; }
+  .c-cyan::before { background: linear-gradient(90deg, #0891b2, #22d3ee); } .c-cyan .icon-box { background: rgba(34,211,238,0.1); } .c-cyan .tag { background: rgba(34,211,238,0.06); border-color: rgba(34,211,238,0.12); color: #4a8a98; }
+  .c-pink::before { background: linear-gradient(90deg, #db2777, #f472b6); } .c-pink .icon-box { background: rgba(244,114,182,0.1); } .c-pink .tag { background: rgba(244,114,182,0.06); border-color: rgba(244,114,182,0.12); color: #b06888; }
+  .c-orange::before { background: linear-gradient(90deg, #ea580c, #fb923c); } .c-orange .icon-box { background: rgba(251,146,60,0.1); } .c-orange .tag { background: rgba(251,146,60,0.06); border-color: rgba(251,146,60,0.12); color: #a87a4a; }
+  .c-red::before { background: linear-gradient(90deg, #dc2626, #f87171); } .c-red .icon-box { background: rgba(248,113,113,0.1); } .c-red .tag { background: rgba(248,113,113,0.06); border-color: rgba(248,113,113,0.12); color: #b06868; }
+  .c-yellow::before { background: linear-gradient(90deg, #ca8a04, #facc15); } .c-yellow .icon-box { background: rgba(250,204,21,0.1); } .c-yellow .tag { background: rgba(250,204,21,0.06); border-color: rgba(250,204,21,0.12); color: #a89a4a; }
+  .c-lime::before { background: linear-gradient(90deg, #65a30d, #a3e635); } .c-lime .icon-box { background: rgba(163,230,53,0.1); } .c-lime .tag { background: rgba(163,230,53,0.06); border-color: rgba(163,230,53,0.12); color: #7a9a4a; }
+  .c-indigo::before { background: linear-gradient(90deg, #4f46e5, #818cf8); } .c-indigo .icon-box { background: rgba(129,140,248,0.1); } .c-indigo .tag { background: rgba(129,140,248,0.06); border-color: rgba(129,140,248,0.12); color: #7078b8; }
+  .c-rose::before { background: linear-gradient(90deg, #e11d48, #fb7185); } .c-rose .icon-box { background: rgba(251,113,133,0.1); } .c-rose .tag { background: rgba(251,113,133,0.06); border-color: rgba(251,113,133,0.12); color: #b06878; }
+  .c-slate::before { background: linear-gradient(90deg, #475569, #94a3b8); } .c-slate .icon-box { background: rgba(148,163,184,0.1); } .c-slate .tag { background: rgba(148,163,184,0.06); border-color: rgba(148,163,184,0.12); color: #6a7a8a; }
+
+  .planned { border-style: dashed; opacity: 0.55; } .planned:hover { opacity: 0.8; }
+  .planned .badge { position: absolute; top: 10px; right: 10px; font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 1px; color: var(--text-muted); background: rgba(20,24,41,0.8); padding: 2px 7px; border-radius: 3px; border: 1px dashed var(--border-hover); }
+  .planned { animation: cardInP 0.4s ease forwards; } @keyframes cardInP { to { opacity: 0.55; transform: translateY(0); } }
+  .waiting .badge { position: absolute; top: 10px; right: 10px; font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 1px; color: var(--amber-dim); background: rgba(245,158,11,0.08); padding: 2px 7px; border-radius: 3px; border: 1px solid rgba(245,158,11,0.2); }
+  .evaluate { border-style: dashed; border-color: rgba(129,140,248,0.3); opacity: 0.7; }
+  .evaluate:hover { opacity: 0.95; }
+  .evaluate .badge { position: absolute; top: 10px; right: 10px; font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 1px; color: var(--indigo); background: rgba(129,140,248,0.08); padding: 2px 7px; border-radius: 3px; border: 1px solid rgba(129,140,248,0.2); }
+  .evaluate { animation: cardInE 0.4s ease forwards; } @keyframes cardInE { to { opacity: 0.7; transform: translateY(0); } }
+  .newbadge { position: absolute; top: 10px; right: 10px; font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 1px; color: var(--green); background: rgba(52,211,153,0.08); padding: 2px 7px; border-radius: 3px; border: 1px solid rgba(52,211,153,0.3); }
+
+  .flow { text-align: center; margin: 8px 0 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .flow svg { width: 16px; height: 16px; stroke: var(--text-muted); fill: none; stroke-width: 2; stroke-linecap: round; }
+
+  /* === SPECIAL SECTIONS === */
+  .special-section { border: 1.5px solid; border-radius: 16px; padding: 28px; margin-bottom: 52px; position: relative; }
+  .special-section .sec-badge { position: absolute; top: -10px; left: 24px; background: var(--bg); padding: 0 12px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; }
+  .special-section .sec-title { font-size: 18px; font-weight: 700; color: #e8ecf4; margin-bottom: 4px; }
+  .special-section .sec-analogy { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+  .special-section .sec-desc { font-size: 13px; color: #7e84aa; line-height: 1.7; margin-bottom: 24px; max-width: 960px; }
+  .ss-purple { border-color: rgba(167,139,250,0.15); background: linear-gradient(135deg, rgba(167,139,250,0.03), rgba(59,130,246,0.02)); }
+  .ss-purple .sec-badge { color: var(--purple); } .ss-purple .sec-analogy { color: var(--amber); }
+  .ss-lime { border-color: rgba(163,230,53,0.15); background: linear-gradient(135deg, rgba(163,230,53,0.03), rgba(52,211,153,0.02)); }
+  .ss-lime .sec-badge { color: var(--lime); } .ss-lime .sec-analogy { color: var(--amber); }
+
+  /* Tandem Team special */
+  .ss-amber { border-color: rgba(245,158,11,0.2); background: linear-gradient(135deg, rgba(245,158,11,0.04), rgba(251,146,60,0.02)); }
+  .ss-amber .sec-badge { color: var(--amber); } .ss-amber .sec-analogy { color: var(--amber); }
+
+  /* Progress section */
+  .ss-green { border-color: rgba(52,211,153,0.2); background: linear-gradient(135deg, rgba(52,211,153,0.04), rgba(45,212,191,0.02)); }
+  .ss-green .sec-badge { color: var(--green); } .ss-green .sec-analogy { color: var(--amber); }
+
+  /* Tool optimization section */
+  .ss-cyan { border-color: rgba(34,211,238,0.2); background: linear-gradient(135deg, rgba(34,211,238,0.04), rgba(59,130,246,0.02)); }
+  .ss-cyan .sec-badge { color: var(--cyan); } .ss-cyan .sec-analogy { color: var(--amber); }
+
+  .progress-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+  .progress-item { background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; padding: 16px; transition: all 0.3s ease; }
+  .progress-item:hover { border-color: var(--border-hover); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+  .progress-item.done { border-color: rgba(52,211,153,0.25); }
+  .progress-item.done .pi-status { color: var(--green); }
+  .progress-item.partial { border-color: rgba(245,158,11,0.25); }
+  .progress-item.partial .pi-status { color: var(--amber); }
+  .progress-item .pi-icon { font-size: 20px; margin-bottom: 6px; }
+  .progress-item .pi-name { font-size: 13px; font-weight: 600; color: #e8ecf4; margin-bottom: 2px; }
+  .progress-item .pi-status { font-family: 'JetBrains Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .progress-item .pi-desc { font-size: 11.5px; color: #6a7098; line-height: 1.5; }
+  .progress-item .pi-date { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-muted); margin-top: 8px; }
+
+  .progress-stats { display: flex; gap: 24px; justify-content: center; margin-bottom: 24px; }
+  .stat-box { text-align: center; }
+  .stat-num { font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 700; }
+  .stat-num.green { color: var(--green); }
+  .stat-num.amber { color: var(--amber); }
+  .stat-num.dim { color: var(--text-muted); }
+  .stat-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+  .teams-flow { display: flex; align-items: stretch; gap: 0; margin-bottom: 20px; overflow-x: auto; }
+  .team-node { background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; padding: 16px; flex: 1; min-width: 150px; transition: all 0.3s ease; }
+  .team-node:hover { border-color: var(--border-hover); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+  .team-node .tn-icon { font-size: 22px; margin-bottom: 6px; }
+  .team-node .tn-name { font-size: 13px; font-weight: 600; color: #e8ecf4; margin-bottom: 2px; }
+  .team-node .tn-role { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .team-node .tn-desc { font-size: 11.5px; color: #6a7098; line-height: 1.5; }
+  .team-node.lead { border-color: var(--amber); box-shadow: 0 0 20px rgba(245,158,11,0.06); }
+  .team-node.lead .tn-name { color: var(--amber); }
+  .team-node.proctor { border-color: var(--cyan); box-shadow: 0 0 20px rgba(34,211,238,0.06); }
+  .team-node.proctor .tn-name { color: var(--cyan); }
+  .team-arrow { display: flex; align-items: center; justify-content: center; padding: 0 4px; flex-shrink: 0; color: var(--text-muted); font-size: 18px; }
+
+  .info-boxes { display: flex; gap: 16px; flex-wrap: wrap; }
+  .info-box { flex: 1; min-width: 200px; border-radius: 10px; padding: 16px 20px; }
+  .info-box h4 { font-size: 12px; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+  .info-box p { font-size: 11.5px; color: #6a7098; line-height: 1.5; }
+  .ib-yellow { background: rgba(250,204,21,0.04); border: 1px dashed rgba(250,204,21,0.2); } .ib-yellow h4 { color: var(--yellow); }
+  .ib-lime { background: rgba(163,230,53,0.04); border: 1px dashed rgba(163,230,53,0.2); } .ib-lime h4 { color: var(--lime); }
+  .ib-green { background: rgba(52,211,153,0.04); border: 1px dashed rgba(52,211,153,0.2); } .ib-green h4 { color: var(--green); }
+  .ib-amber { background: rgba(245,158,11,0.04); border: 1px dashed rgba(245,158,11,0.2); } .ib-amber h4 { color: var(--amber); }
+  .ib-cyan { background: rgba(34,211,238,0.04); border: 1px dashed rgba(34,211,238,0.2); } .ib-cyan h4 { color: var(--cyan); }
+
+  .gsd-flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
+  .gsd-step { background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; padding: 14px; text-align: center; transition: all 0.3s ease; }
+  .gsd-step:hover { border-color: rgba(163,230,53,0.3); transform: translateY(-2px); }
+  .gsd-step .step-num { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--lime); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+  .gsd-step .step-icon { font-size: 24px; margin-bottom: 6px; }
+  .gsd-step .step-name { font-size: 12px; font-weight: 600; color: #e8ecf4; margin-bottom: 4px; }
+  .gsd-step .step-desc { font-size: 11px; color: #6a7098; line-height: 1.4; }
+
+  /* Profile cards */
+  .profile-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
+  .profile-card { background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; transition: all 0.3s ease; }
+  .profile-card:hover { border-color: var(--border-hover); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+  .profile-card .pf-name { font-size: 14px; font-weight: 700; color: #e8ecf4; margin-bottom: 4px; }
+  .profile-card .pf-tokens { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); margin-bottom: 8px; }
+  .profile-card .pf-servers { font-size: 11px; color: #6a7098; line-height: 1.5; }
+  .profile-card.pf-active { border-color: var(--cyan); box-shadow: 0 0 20px rgba(34,211,238,0.08); }
+
+  .legend { display: flex; justify-content: center; gap: 24px; margin-top: 44px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot.active { background: var(--green); } .dot.wait { background: var(--amber); opacity: 0.6; } .dot.future { background: var(--text-muted); border: 1px dashed var(--text-dim); } .dot.eval { background: var(--indigo); opacity: 0.7; } .dot.newdot { background: var(--cyan); }
+
+  @media (max-width: 960px) { .g3, .g4 { grid-template-columns: repeat(2, 1fr); } .teams-flow { flex-wrap: wrap; } .team-arrow { display: none; } .gsd-flow, .profile-grid { grid-template-columns: repeat(3, 1fr); } .progress-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .g2, .g3, .g4 { grid-template-columns: 1fr; } .page { padding: 24px 16px; } .gsd-flow, .profile-grid { grid-template-columns: 1fr 1fr; } .progress-grid { grid-template-columns: 1fr; } .progress-stats { flex-wrap: wrap; gap: 16px; } }
+</style>
+</head>
+<body>
+<div id="back-nav"><a href="index.html">&larr; Amerix Home</a></div>
+<div class="page">
+
+  <div class="header">
+    <h1>🏗️ Amerix Development Toolkit</h1>
+    <div class="sub">v7 — updated Feb 12, 2026 · tandem team, tool router, MCP profiles, agent coordination protocols</div>
+  </div>
+
+  <div class="hub">
+    <div class="hub-card">
+      <div class="emoji">👨‍💻</div>
+      <h2>Silas — CEO, Amerix Medical Consulting</h2>
+      <div class="role">hospice compliance consulting → healthcare analytics SaaS</div>
+    </div>
+  </div>
+
+  <!-- ============ TANDEM TEAM ============ -->
+  <div class="special-section ss-amber">
+    <div class="sec-badge">🤝 New in v7</div>
+    <div class="sec-title">The Tandem Team — Multi-Agent Coordination</div>
+    <div class="sec-analogy">⟶ One Brain, Four Sets of Hands, One Shared Desktop</div>
+    <div class="sec-desc">The Tandem Team is a real-time multi-agent coordination system running on Silas's desktop. Four AI agents share context via files, archives, and direct communication — Proctor sees the screen and coordinates, Claude Code builds in the terminal, Cowork handles non-coding automation, and Browser Use drives web tasks. Silas says <strong>"hey team"</strong> and they all activate together. This doesn't exist anywhere else yet.</div>
+
+    <div class="teams-flow">
+      <div class="team-node lead"><div class="tn-icon">👨‍💻</div><div class="tn-name">Silas</div><div class="tn-role">CEO / Orchestrator</div><div class="tn-desc">Gives the command. "Hey team" / "let's" / "we need" activates all agents. Directs priorities, approves plans, makes decisions.</div></div>
+      <div class="team-arrow">→</div>
+      <div class="team-node proctor"><div class="tn-icon">🎛️</div><div class="tn-name">Proctor</div><div class="tn-role">Mission Control</div><div class="tn-desc">Claude Desktop (Chat mode). Sees the screen via Windows-MCP. Types into Claude Code's terminal. Plans strategy, relays tasks, monitors progress. The coordinator.</div></div>
+      <div class="team-arrow">↔</div>
+      <div class="team-node"><div class="tn-icon">⌨️</div><div class="tn-name">Claude Code</div><div class="tn-role">Builder</div><div class="tn-desc">Terminal agent. Writes code, builds servers, runs tests, edits files. 14 plugins, Agent Teams, GSD. The muscle. Proctor checks on him proactively.</div></div>
+      <div class="team-arrow">↔</div>
+      <div class="team-node"><div class="tn-icon">📋</div><div class="tn-name">Cowork</div><div class="tn-role">Operations</div><div class="tn-desc">Claude Desktop (Tasks mode). Non-coding agentic work: file management, document processing, system config. Runs autonomously on task lists.</div></div>
+      <div class="team-arrow">↔</div>
+      <div class="team-node"><div class="tn-icon">🌐</div><div class="tn-name">Browser Use</div><div class="tn-role">Web Agent</div><div class="tn-desc">MCP server for web automation. Replaces Chrome extension. Navigates sites, fills forms, scrapes data. Controlled by other agents.</div></div>
+    </div>
+
+    <div class="info-boxes">
+      <div class="info-box ib-amber"><h4>📡 Communication</h4><p>Proctor → Claude Code via Windows-MCP typed messages. All agents share: session-state.md, claude-archive.md, claude-code-archive.md, context folders with INDEX.md.</p></div>
+      <div class="info-box ib-amber"><h4>🔑 Callout Cadence</h4><p>"Hey team" / "let's" / "we need" / "I want" = team activation. If Claude Code isn't running, Proctor cold-starts Terminal → runs <code>claude</code> → boots him up.</p></div>
+      <div class="info-box ib-amber"><h4>👁️ Proctor Protocol</h4><p>Proctor MUST proactively check Claude Code's terminal via Windows-MCP throughout every session. Monitor status, relay tasks, read output. Don't wait to be asked.</p></div>
+      <div class="info-box ib-amber"><h4>🔮 The Vision</h4><p>This coordination model is a proof of concept for multi-agent desktop collaboration that doesn't exist yet. We're building the feature Anthropic will ship next.</p></div>
+    </div>
+  </div>
+
+  <!-- ============ TOOL OPTIMIZATION ============ -->
+  <div class="special-section ss-cyan">
+    <div class="sec-badge">⚡ New in v7</div>
+    <div class="sec-title">MCP Tool Optimization — From 49K to 2.5K Tokens</div>
+    <div class="sec-analogy">⟶ From Carrying Every Tool to a Smart Toolbelt</div>
+    <div class="sec-desc">60+ MCP tools across 7 servers consumed ~49K tokens (24.5% of context window). Three-tier solution delivers 95% reduction: Session Profiles switch tool loadouts, Tool Router discovers tools on demand, and Native Tool Search (when Anthropic ships it) will let Claude find tools without loading them all.</div>
+
+    <div class="profile-grid">
+      <div class="profile-card"><div class="pf-name">minimal</div><div class="pf-tokens">~1.5K tokens</div><div class="pf-servers">Windows-MCP only</div></div>
+      <div class="profile-card"><div class="pf-name">lean</div><div class="pf-tokens">~7K tokens</div><div class="pf-servers">Docker + Windows-MCP</div></div>
+      <div class="profile-card pf-active"><div class="pf-name">router</div><div class="pf-tokens">~4K tokens</div><div class="pf-servers">Tool Router + Docker + Windows-MCP</div></div>
+      <div class="profile-card"><div class="pf-name">dev</div><div class="pf-tokens">~8.5K tokens</div><div class="pf-servers">Docker + Browser Use + Windows-MCP</div></div>
+      <div class="profile-card"><div class="pf-name">full</div><div class="pf-tokens">~14K tokens</div><div class="pf-servers">Docker + Browser Use + Windows-MCP</div></div>
+    </div>
+
+    <div class="info-boxes">
+      <div class="info-box ib-cyan"><h4>🔀 Profile Switcher</h4><p><code>Switch-ClaudeProfile.ps1 router</code> — PowerShell script swaps Claude Desktop config. Auto-discovers profiles in <code>%APPDATA%\Claude\profiles\</code>.</p></div>
+      <div class="info-box ib-cyan"><h4>🔍 Tool Router (Phase 1)</h4><p>BM25 search over 34-tool registry. Returns matched tool names + descriptions with confidence scores. Phase 2 adds execution. Phase 3 adds semantic search.</p></div>
+      <div class="info-box ib-cyan"><h4>🖥️ Windows-MCP Mandate</h4><p>MANDATORY in every profile, no exceptions. Proctor's eyes and hands. Without it, Proctor is blind — cannot see screen, type to Claude Code, or coordinate the team.</p></div>
+    </div>
+  </div>
+
+  <!-- ============ PROGRESS & MILESTONES ============ -->
+  <div class="special-section ss-green">
+    <div class="sec-badge">📊 Status Report</div>
+    <div class="sec-title">Build Progress — Infrastructure Phase</div>
+    <div class="sec-analogy">⟶ Foundation Poured, Utilities Roughed In, Foreman Hired</div>
+    <div class="sec-desc">Eight days of infrastructure work (Feb 5–12) have connected all systems, established agent coordination protocols, and optimized the tool pipeline. Every agent can reach the database, email, files, and cloud services. The Tandem Team is operational. Next phase: framing the actual building.</div>
+
+    <div class="progress-stats">
+      <div class="stat-box"><div class="stat-num green">15</div><div class="stat-label">Systems Online</div></div>
+      <div class="stat-box"><div class="stat-num amber">2</div><div class="stat-label">Partial / Pending</div></div>
+      <div class="stat-box"><div class="stat-num dim">8</div><div class="stat-label">Planned (SaaS Phase)</div></div>
+    </div>
+
+    <div class="progress-grid">
+      <div class="progress-item done">
+        <div class="pi-icon">🐘</div>
+        <div class="pi-name">PostgreSQL + Docker MCP</div>
+        <div class="pi-status">✅ Connected</div>
+        <div class="pi-desc">amerix-postgres container running (pgvector/pg16). Docker MCP database-server connected with 12 tools. 4 tables live: archival_memory, file_claims, handoffs, sessions.</div>
+        <div class="pi-date">Feb 10–11 · Fixed password + host.docker.internal</div>
+      </div>
+
+      <div class="progress-item done">
+        <div class="pi-icon">📧</div>
+        <div class="pi-name">Gmail MCP + OAuth</div>
+        <div class="pi-status">✅ Connected</div>
+        <div class="pi-desc">Docker MCP gmail-mcp connected to executive.shelton@gmail.com. 3 tools (list, search, send). OAuth tokens for Gmail+Drive+Sheets across all platforms.</div>
+        <div class="pi-date">Feb 11 · Fixed wrong account + 2FA + broken CLI</div>
+      </div>
+
+      <div class="progress-item done">
+        <div class="pi-icon">🔧</div>
+        <div class="pi-name">Docker MCP EPIPE Fix</div>
+        <div class="pi-status">✅ Resolved</div>
+        <div class="pi-desc">Root cause: ProgramData system env var was missing from Windows registry. docker-mcp.exe panicked on startup. Restored var, killed zombie processes, rebooted.</div>
+        <div class="pi-date">Feb 11 · Cowork diagnosed + fixed</div>
+      </div>
+
+      <div class="progress-item done">
+        <div class="pi-icon">🧠</div>
+        <div class="pi-name">Knowledge Graph + Thinking</div>
+        <div class="pi-status">✅ Active</div>
+        <div class="pi-desc">Memory MCP (knowledge graph) seeded with entities and relationships. Sequential thinking MCP operational. CC-v3 cross-session recall with pgvector embeddings.</div>
+        <div class="pi-date">Feb 10–12 · Windows-MCP mandate stored as vector embedding</div>
+      </div>
+
+      <div class="progress-item done">
+        <div class="pi-icon">🔗</div>
+        <div class="pi-name">Google Ecosystem Integration</div>
+        <div class="pi-status">✅ All Platforms</div>
+        <div class="pi-desc">Gmail + Drive + Sheets connected across: claude.ai (built-in), Claude Code (OAuth token), N8N (web OAuth client), Docker MCP (app password). 10 scopes authorized.</div>
+        <div class="pi-date">Feb 11 · Desktop + Web OAuth clients created</div>
+      </div>
+
+      <div class="progress-item done">
+        <div class="pi-icon">🛠️</div>
+        <div class="pi-name">Community Tools (Phase 1+2)</div>
+        <div class="pi-status">✅ 4 Installed + Hardened</div>
+        <div class="pi-desc">Postgres Skill (/pg-query), pg-aiguide MCP (HTTP), Google Workspace Skill (Gmail working), Continuous Claude v3 (/recall + /remember, pgvector embeddings, 3 hooks wired).</div>
+        <div class="pi-date">Feb 11 · Claude Code installed all 4</div>
+      </div>
+
+      <div class="progress-item done">
+        <div class="pi-icon">📁</div>
+        <div class="pi-name">Archive + Context System</div>
+        <div class="pi-status">✅ Operational</div>
+        <div class="pi-desc">claude-archive.md (Proctor) + claude-code-archive.md (CC). Session state handoff files. Deliverables tracking. CLAUDE.md hierarchy (general + project). Mandatory update protocol.</div>
+        <div class="pi-date">Feb 10–12 · Tandem Team protocols added to archives</div>
+      </div>
+
+      <div class="progress-item done">
+        <div class="pi-icon">⚡</div>
+        <div class="pi-name">N8N Automation Engine</div>
+        <div class="pi-status">✅ Connected</div>
+        <div class="pi-desc">N8N container running on port 5678 with Gmail + Drive OAuth credentials configured. Web application OAuth client created for N8N redirect flow.</div>
+        <div class="pi-date">Feb 11 · Currently stopped (start when needed)</div>
+      </div>
+
+      <div class="progress-item done">
+        <div class="pi-icon">🤝</div>
+        <div class="pi-name">Tandem Team Coordination</div>
+        <div class="pi-status">✅ 4 Agents Active</div>
+        <div class="pi-desc">Proctor (Chat), Claude Code (Terminal, 14 plugins), Cowork (Tasks), Browser Use (MCP). Team callout cadence, proactive monitoring, cold-start protocol, shared context files.</div>
+        <div class="pi-date">Feb 12 · Protocols persisted in archives + knowledge graph</div>
+      </div>
+
+      <div class="progress-item done">
+        <div class="pi-icon">🔍</div>
+        <div class="pi-name">Tool Router MCP (Phase 1)</div>
+        <div class="pi-status">✅ Discovery Live</div>
+        <div class="pi-desc">Custom MCP server: BM25 search over 34-tool registry (6 categories). Returns matched tool names + descriptions with confidence scores. Wired into both Claude Code and Claude Desktop.</div>
+        <div class="pi-date">Feb 12 · Built by Claude Code, tested, deployed to both agents</div>
+      </div>
+
+      <div class="progress-item done">
+        <div class="pi-icon">🔀</div>
+        <div class="pi-name">MCP Session Profiles</div>
+        <div class="pi-status">✅ 5 Profiles Live</div>
+        <div class="pi-desc">Profile switcher (PowerShell) swaps Claude Desktop configs. 5 profiles: minimal (1.5K), lean (7K), router (4K), dev (8.5K), full (14K). Windows-MCP mandatory in all.</div>
+        <div class="pi-date">Feb 12 · Switch-ClaudeProfile.ps1 operational</div>
+      </div>
+
+      <div class="progress-item done">
+        <div class="pi-icon">📋</div>
+        <div class="pi-name">MCP Tool Optimization Strategy</div>
+        <div class="pi-status">✅ Documented</div>
+        <div class="pi-desc">3-tier approach: Session Profiles (done), Tool Router (Phase 1 done), Native Tool Search (waiting on Anthropic). Strategy doc delivered as .docx. 95% token reduction achieved.</div>
+        <div class="pi-date">Feb 12 · MCP-Tool-Optimization-Strategy.docx</div>
+      </div>
+
+      <div class="progress-item partial">
+        <div class="pi-icon">🔄</div>
+        <div class="pi-name">MCP Server Persistence</div>
+        <div class="pi-status">⚠️ Session-Scoped</div>
+        <div class="pi-desc">Docker Desktop "My servers" shows 0. All MCP servers added via mcp-add are session-scoped — lost on restart. Need to add through Docker Desktop UI for persistence.</div>
+        <div class="pi-date">Pending · Use Docker Desktop UI, not CLI</div>
+      </div>
+
+      <div class="progress-item partial">
+        <div class="pi-icon">☁️</div>
+        <div class="pi-name">Cloud Archive Sync</div>
+        <div class="pi-status">⚠️ Not Started</div>
+        <div class="pi-desc">Archives exist locally but Google Drive folder structure for cloud backup not yet created. Need automated sync so archives survive hardware failure.</div>
+        <div class="pi-date">Pending · Drive integration is ready</div>
+      </div>
+    </div>
+
+    <div class="info-boxes">
+      <div class="info-box ib-green"><h4>🎯 Next Milestone</h4><p>Begin Amerix SaaS application development — database schema design, project scaffolding, authentication setup. The foundation is ready for framing.</p></div>
+      <div class="info-box ib-green"><h4>🆕 Today's Win</h4><p>Tool Router Phase 1 live. MCP profiles operational. Tandem Team protocols persisted. Context window recovered from 24.5% tool bloat to &lt;2.5% with router profile.</p></div>
+      <div class="info-box ib-green"><h4>📝 Key Lesson</h4><p>Windows-MCP is non-negotiable for Proctor. Without it, Proctor is blind — no screen access, no Claude Code coordination, no desktop control. Mandatory in ALL profiles.</p></div>
+    </div>
+  </div>
+
+  <!-- ============ TIER 1: AI INTERFACES ============ -->
+  <div class="tier">
+    <div class="tier-head"><span class="tier-label">Tier 1 — Your AI Team (how you talk to Claude)</span><span class="tier-line"></span></div>
+    <div class="tier-desc">Four agents on one desktop — same brain (Claude), different stations, coordinated in real-time by the Tandem Team.</div>
+    <div class="grid g4">
+      <div class="card c-amber"><div class="card-head"><div class="icon-box">💬</div><div><h3>Claude.ai (Web/Mobile)</h3><div class="card-type">chat interface</div></div></div><div class="analogy">Your Office Desk</div><div class="desc">Where you're sitting right now. Ask questions, hand over files, get polished documents back. Best for consulting: CAP analysis, Excel engineering, research, proposals, client deliverables.</div><div class="tags"><span class="tag">docx</span><span class="tag">xlsx</span><span class="tag">pptx</span><span class="tag">research</span><span class="tag">analysis</span><span class="tag">web search</span></div></div>
+
+      <div class="card c-cyan"><span class="newbadge">UPGRADED v7</span><div class="card-head"><div class="icon-box">🎛️</div><div><h3>The Proctor</h3><div class="card-type">claude desktop (chat) + MCP profiles</div></div></div><div class="analogy">Your Mission Control Room</div><div class="desc">Claude Desktop supercharged with MCP extensions and profile system. Sees the screen via Windows-MCP, types into Claude Code's terminal, coordinates the Tandem Team. Switches between 5 tool profiles (minimal→full) to optimize context. The coordinator that orchestrates everything.</div><div class="tags"><span class="tag">windows-MCP ★</span><span class="tag">5 profiles</span><span class="tag">tool router</span><span class="tag">tandem lead</span><span class="tag">cold-start</span></div></div>
+
+      <div class="card c-amber"><div class="card-head"><div class="icon-box">⌨️</div><div><h3>Claude Code</h3><div class="card-type">CLI agent + 14 plugins + agent teams</div></div></div><div class="analogy">Your Construction Foreman</div><div class="desc">Runs in your terminal. 14 plugins wired, Tool Router connected, Agent Teams + GSD enabled. Proctor checks on him proactively via Windows-MCP. Builds the SaaS, runs tests, deploys.</div><div class="tags"><span class="tag">14 plugins</span><span class="tag">tool router ✅</span><span class="tag">agent teams ✅</span><span class="tag">GSD ✅</span><span class="tag">CC-v3</span></div></div>
+
+      <div class="card c-amber"><div class="card-head"><div class="icon-box">📋</div><div><h3>Cowork + Browser Use</h3><div class="card-type">tasks mode + web automation MCP</div></div></div><div class="analogy">Your Operations & Logistics</div><div class="desc">Cowork (Tasks mode): non-coding agentic work — file management, document processing, system config. Browser Use (MCP): web automation that replaced the Chrome extension. Navigate, fill forms, scrape.</div><div class="tags"><span class="tag">tasks mode</span><span class="tag">browser-use MCP</span><span class="tag">file ops</span><span class="tag">web scraping</span></div></div>
+    </div>
+  </div>
+
+  <div class="flow"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>claude code's secret weapons<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div>
+
+  <!-- ============ AGENT TEAMS DEEP DIVE ============ -->
+  <div class="special-section ss-purple">
+    <div class="sec-badge">⚡ Deep Dive</div>
+    <div class="sec-title">Claude Code Agent Teams</div>
+    <div class="sec-analogy">⟶ Your Construction Crew, Not Just a Foreman</div>
+    <div class="sec-desc">Without Agent Teams, Claude Code is one person doing everything in sequence. With it enabled, it becomes a <strong>full construction crew</strong>: a lead foreman coordinating multiple specialists who work simultaneously, talk to each other, and hand off work when dependencies are met.</div>
+
+    <div class="teams-flow">
+      <div class="team-node lead"><div class="tn-icon">👷‍♂️</div><div class="tn-name">Lead Agent (You → here)</div><div class="tn-role">General Contractor</div><div class="tn-desc">The boss. Breaks tasks, spawns teammates, assigns work, monitors progress, and reports back.</div></div>
+      <div class="team-arrow">→</div>
+      <div class="team-node"><div class="tn-icon">📐</div><div class="tn-name">Architect</div><div class="tn-role">Scaffolder</div><div class="tn-desc">Goes first. Sets up project structure, folders, config, tech stack. Draws blueprints before anyone builds.</div></div>
+      <div class="team-arrow">→</div>
+      <div class="team-node"><div class="tn-icon">🔌</div><div class="tn-name">API / Backend</div><div class="tn-role">Electrician & Plumber</div><div class="tn-desc">Server logic: database, API endpoints, Stripe, auth. You never see their work, but nothing functions without it.</div></div>
+      <div class="team-arrow">→</div>
+      <div class="team-node"><div class="tn-icon">🎨</div><div class="tn-name">Frontend / UI</div><div class="tn-role">Interior Designer</div><div class="tn-desc">What clients see and click: dashboards, login, uploads, reports. Works in parallel once structure is ready.</div></div>
+      <div class="team-arrow">→</div>
+      <div class="team-node"><div class="tn-icon">🚀</div><div class="tn-name">Deploy / QA</div><div class="tn-role">Building Inspector</div><div class="tn-desc">Goes last. Tests, checks bugs, deploys to Railway, verifies. Fails → messages builder → fix → redeploy.</div></div>
+    </div>
+
+    <div class="info-boxes">
+      <div class="info-box ib-yellow"><h4>📋 Shared Task List</h4><p>Every teammate sees the same to-do list with dependencies. Deploy can't start until build tasks complete.</p></div>
+      <div class="info-box ib-yellow"><h4>💬 Direct Messaging</h4><p>Teammates message each other: "Schema ready, table names are X, Y, Z." They coordinate instead of working in silos.</p></div>
+      <div class="info-box ib-yellow"><h4>🔄 Self-Healing Loop</h4><p>Deploy fails → reads error → messages builder → fix → redeploy. Build-test-deploy-fix happens without you.</p></div>
+      <div class="info-box ib-yellow"><h4>⚠️ Trade-offs</h4><p>4-agent team uses ~5x tokens. Best for large parallel tasks. Overkill for single-file changes. No session resumption yet.</p></div>
+    </div>
+  </div>
+
+  <!-- ============ GSD DEEP DIVE ============ -->
+  <div class="special-section ss-lime">
+    <div class="sec-badge">🔧 Deep Dive</div>
+    <div class="sec-title">GSD — Get Shit Done (v1.11.2)</div>
+    <div class="sec-analogy">⟶ Your Project Manager Who Actually Delivers</div>
+    <div class="sec-desc">GSD is a spec-driven development framework inside Claude Code. Agent Teams is the <strong>crew</strong>, GSD is the <strong>project manager who writes blueprints, schedules phases, and verifies every room passes inspection</strong>.</div>
+
+    <div class="gsd-flow">
+      <div class="gsd-step"><div class="step-num">Phase 1</div><div class="step-icon">🎯</div><div class="step-name">Define Goal</div><div class="step-desc">Tell GSD what to build. Asks smart questions until scope is clear.</div></div>
+      <div class="gsd-step"><div class="step-num">Phase 2</div><div class="step-icon">🔍</div><div class="step-name">Research</div><div class="step-desc">Researcher agent investigates tech, pitfalls, best practices.</div></div>
+      <div class="gsd-step"><div class="step-num">Phase 3</div><div class="step-icon">📋</div><div class="step-name">Plan</div><div class="step-desc">Detailed roadmap with milestones, phases, dependencies.</div></div>
+      <div class="gsd-step"><div class="step-num">Phase 4</div><div class="step-icon">✅</div><div class="step-name">Verify</div><div class="step-desc">Checks plan for gaps before a single line of code is written.</div></div>
+      <div class="gsd-step"><div class="step-num">Phase 5</div><div class="step-icon">⚡</div><div class="step-name">Execute</div><div class="step-desc">Executor subagent builds each phase, auto-verifies, moves on.</div></div>
+    </div>
+
+    <div class="info-boxes">
+      <div class="info-box ib-lime"><h4>🤖 Researcher Agent</h4><p>Before building, GSD investigates tech choices, APIs, libraries, and problems. Like hiring a consultant before construction.</p></div>
+      <div class="info-box ib-lime"><h4>⚙️ Executor Subagent</h4><p>Dedicated agent that builds each phase independently, then verifies its own work. Keeps main context clean.</p></div>
+      <div class="info-box ib-lime"><h4>📝 Context Engineering</h4><p>Manages what Claude sees at each step — only relevant specs, not everything at once. Prevents context overload.</p></div>
+      <div class="info-box ib-lime"><h4>🔗 Works WITH Agent Teams</h4><p>GSD creates the plan, Agent Teams executes in parallel. Project manager + crew = structured planning + parallel execution.</p></div>
+    </div>
+  </div>
+
+  <!-- ============ SUPPORT FILES & CONFIGS ============ -->
+  <div class="tier">
+    <div class="tier-head"><span class="tier-label">Claude Code Support Files (the playbooks and memory)</span><span class="tier-line"></span></div>
+    <div class="tier-desc">Instruction manuals, memory banks, and maps that Claude Code reads before starting work.</div>
+    <div class="grid g3">
+      <div class="card c-lime"><div class="card-head"><div class="icon-box">📄</div><div><h3>CLAUDE.md</h3><div class="card-type">project configuration file</div></div></div><div class="analogy">The Building's Master Blueprint</div><div class="desc">Markdown file in project root that every Claude Code session and Agent Teams teammate reads on startup. Full tech stack, schema, business rules, coding conventions, domain knowledge.</div><div class="tags"><span class="tag">tech stack</span><span class="tag">schema</span><span class="tag">business rules</span><span class="tag">auto-loaded</span></div></div>
+
+      <div class="card c-lime"><div class="card-head"><div class="icon-box">📂</div><div><h3>Context Folders + Archives</h3><div class="card-type">reference docs + session memory</div></div></div><div class="analogy">The Company Knowledge Base</div><div class="desc"><strong>General:</strong> claude-context\ <strong>SaaS:</strong> amerix-saas\context\ — Each has INDEX.md. Plus: claude-archive.md (Proctor), claude-code-archive.md (CC), session-state.md (handoff). Mandatory update protocol at end of every chat and at 50% context.</div><div class="tags"><span class="tag">archives</span><span class="tag">session-state.md</span><span class="tag">INDEX.md</span><span class="tag">cross-session</span></div></div>
+
+      <div class="card c-lime"><div class="card-head"><div class="icon-box">🖥️</div><div><h3>WSL + tmux</h3><div class="card-type">linux subsystem + terminal multiplexer</div></div></div><div class="analogy">The Split-Screen Security Monitor</div><div class="desc"><strong>WSL</strong> runs Linux inside Windows. <strong>tmux</strong> splits your screen into panes so you watch multiple Agent Teams teammates working side by side. Security guard watching multiple camera feeds.</div><div class="tags"><span class="tag">Ubuntu</span><span class="tag">split panes</span><span class="tag">side-by-side</span><span class="tag">agent visibility</span></div></div>
+    </div>
+  </div>
+
+  <div class="flow"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>community power-ups for claude code<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div>
+
+  <!-- ============ RESOURCE REPOS ============ -->
+  <div class="tier">
+    <div class="tier-head"><span class="tier-label">Resource Repos (community tools — install when SaaS build starts)</span><span class="tier-line"></span></div>
+    <div class="tier-desc">Open-source repos from the Claude Code community. Phase 1+2 tools are already installed via Claude Code.</div>
+    <div class="grid g3">
+
+      <div class="card c-indigo evaluate" style="animation-delay:0.05s">
+        <span class="badge">INSTALL NOW</span>
+        <span class="stars">⭐ JSNation Nominee</span>
+        <div class="card-head"><div class="icon-box">📦</div><div><h3>Repomix</h3><div class="card-type">yamadashy/repomix</div></div></div>
+        <div class="analogy">Your Codebase Photocopier for AI</div>
+        <div class="desc">Packs your entire codebase into a single AI-friendly file. When your SaaS has 50+ files and you want to ask Claude.ai about it — Repomix creates one file with everything. Lightweight, no conflicts.</div>
+        <div class="tags"><span class="tag">npx repomix</span><span class="tag">one-file output</span><span class="tag">token counting</span><span class="tag">instant context</span></div>
+      </div>
+
+      <div class="card c-indigo evaluate" style="animation-delay:0.1s">
+        <span class="badge">EVALUATE</span>
+        <span class="stars">⭐ 13.9k</span>
+        <div class="card-head"><div class="icon-box">🌊</div><div><h3>Claude-Flow</h3><div class="card-type">ruvnet/claude-flow</div></div></div>
+        <div class="analogy">Your War Room with Memory</div>
+        <div class="desc">Enterprise-grade orchestration. Where Agent Teams gives you a crew and GSD gives you a plan, Claude-Flow adds a <strong>war room with persistent memory</strong> — cross-session learning, swarm intelligence, 87+ MCP tools.</div>
+        <div class="tags"><span class="tag">swarm orchestration</span><span class="tag">persistent memory</span><span class="tag">87 MCP tools</span><span class="tag">solo-dev mode</span></div>
+      </div>
+
+      <div class="card c-indigo evaluate" style="animation-delay:0.15s">
+        <span class="badge">EVALUATE</span>
+        <span class="stars">⭐ 622+</span>
+        <div class="card-head"><div class="icon-box">🤖</div><div><h3>VoltAgent Subagents</h3><div class="card-type">VoltAgent/awesome-claude-code-subagents</div></div></div>
+        <div class="analogy">Your Specialist Hiring Agency</div>
+        <div class="desc">Library of 100+ pre-built specialized subagents. Browse the catalog, hire the specialist: backend-dev, database-engineer, security-scanner, api-docs, cicd-engineer.</div>
+        <div class="tags"><span class="tag">100+ agents</span><span class="tag">cherry-pick</span><span class="tag">backend-dev</span><span class="tag">security</span><span class="tag">database</span></div>
+      </div>
+
+      <div class="card c-indigo evaluate" style="animation-delay:0.2s">
+        <span class="badge">EVALUATE</span>
+        <div class="card-head"><div class="icon-box">🧰</div><div><h3>ClaudeKit Skills</h3><div class="card-type">mrgoonie/claudekit-skills</div></div></div>
+        <div class="analogy">Your Power Tool Catalog</div>
+        <div class="desc">Plugin marketplace: better-auth (authentication framework), context-engineering, code-review, Repomix integration, media processing. Skills auto-activate based on task context.</div>
+        <div class="tags"><span class="tag">plugin marketplace</span><span class="tag">better-auth</span><span class="tag">context-eng</span><span class="tag">modular</span></div>
+      </div>
+
+      <div class="card c-indigo evaluate" style="animation-delay:0.25s">
+        <span class="badge">EVALUATE</span>
+        <div class="card-head"><div class="icon-box">🔗</div><div><h3>claude-code-tools</h3><div class="card-type">chalasani/claude-code-tools</div></div></div>
+        <div class="analogy">Your Session Save Game</div>
+        <div class="desc">Session continuity — avoid compaction, recover context across sessions, and hand off between agents. Includes fast Rust-powered full-text session search.</div>
+        <div class="tags"><span class="tag">anti-compaction</span><span class="tag">session restore</span><span class="tag">cross-agent handoff</span><span class="tag">session search</span></div>
+      </div>
+
+      <div class="card c-indigo evaluate" style="animation-delay:0.3s">
+        <span class="badge">BOOKMARK</span>
+        <div class="card-head"><div class="icon-box">📚</div><div><h3>Awesome Claude Code Lists</h3><div class="card-type">hesreallyhim + jqueryscript</div></div></div>
+        <div class="analogy">Your Yellow Pages for Claude Tools</div>
+        <div class="desc">Curated index repos — catalogs of every slash command, CLAUDE.md template, CLI tool, skill, agent, and workflow in the ecosystem. Yellow Pages for when you need something specific.</div>
+        <div class="tags"><span class="tag">awesome-claude-code</span><span class="tag">awesome-claude-skills</span><span class="tag">index of 75+ repos</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="flow"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>the proctor's superpowers<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div>
+
+  <!-- ============ TIER 2: PROCTOR MCP EXTENSIONS ============ -->
+  <div class="tier">
+    <div class="tier-head"><span class="tier-label">Tier 2 — The Proctor's Arsenal (MCP Extensions + Tool Router)</span><span class="tier-line"></span></div>
+    <div class="tier-desc">Each MCP extension is a tool on the Proctor's Swiss Army knife. With Tool Router, the Proctor only loads what's needed per session.</div>
+    <div class="grid g3">
+      <div class="card c-cyan"><span class="newbadge">NEW v7</span><div class="card-head"><div class="icon-box">🔍</div><div><h3>Tool Router MCP</h3><div class="card-type">custom MCP — BM25 search</div></div></div><div class="analogy">Your Smart Toolbelt</div><div class="desc">Custom-built MCP server that replaces loading all 60+ tools. One tool (<code>route_task</code>) searches a 34-tool registry across 6 categories using BM25. Finds the right tool for the job without bloating context. Phase 1 = discovery, Phase 2 = execution.</div><div class="tags"><span class="tag">route_task</span><span class="tag">34 tools indexed</span><span class="tag">6 categories</span><span class="tag">BM25</span><span class="tag">phase 1 ✅</span></div></div>
+
+      <div class="card c-blue"><div class="card-head"><div class="icon-box">🖥️</div><div><h3>Windows MCP ★</h3><div class="card-type">MCP — 11 tools — MANDATORY</div></div></div><div class="analogy">Proctor's Eyes & Hands</div><div class="desc">MANDATORY in every profile. Proctor's connection to the physical desktop — screenshot, click, type, PowerShell, app launch. Required for Claude Code coordination: Proctor sees the terminal, types messages, reads output. Without this, Proctor is blind.</div><div class="tags"><span class="tag">MANDATORY ★</span><span class="tag">click</span><span class="tag">type</span><span class="tag">screenshot</span><span class="tag">powershell</span><span class="tag">cold-start</span></div></div>
+
+      <div class="card c-blue"><div class="card-head"><div class="icon-box">🌐</div><div><h3>Browser Use MCP</h3><div class="card-type">MCP — web automation</div></div></div><div class="analogy">Your Web Chauffeur</div><div class="desc">Replaced Chrome NativeMessaging extension. Drives browser — click links, fill forms, scrape data, navigate sites. Controlled by Proctor or used independently. Chrome NativeMessagingHosts .json renamed to .disabled.</div><div class="tags"><span class="tag">browse</span><span class="tag">scrape</span><span class="tag">automate</span><span class="tag">replaced chrome ext</span></div></div>
+
+      <div class="card c-blue"><div class="card-head"><div class="icon-box">📁</div><div><h3>Filesystem</h3><div class="card-type">MCP extension</div></div></div><div class="analogy">Your Filing Clerk</div><div class="desc">Navigates folders, reads/creates files, organizes documents. Essential for context folders and CLAUDE.md config.</div><div class="tags"><span class="tag">read</span><span class="tag">write</span><span class="tag">navigate</span><span class="tag">organize</span></div></div>
+
+      <div class="card c-blue"><div class="card-head"><div class="icon-box">🐙</div><div><h3>GitHub MCP</h3><div class="card-type">MCP extension</div></div></div><div class="analogy">Your Code Librarian</div><div class="desc">Create repos, push/pull code, branches and issues. Cataloging every version, retrievable on command.</div><div class="tags"><span class="tag">repos</span><span class="tag">branches</span><span class="tag">issues</span><span class="tag">commits</span></div></div>
+
+      <div class="card c-blue"><div class="card-head"><div class="icon-box">🚂</div><div><h3>Railway MCP</h3><div class="card-type">MCP extension</div></div></div><div class="analogy">Your Launchpad Controller</div><div class="desc">Deploy, manage environments, check logs, scale services — all from chat. Mission control for your app.</div><div class="tags"><span class="tag">deploy</span><span class="tag">logs</span><span class="tag">environments</span><span class="tag">scale</span></div></div>
+
+      <div class="card c-blue"><div class="card-head"><div class="icon-box">📊</div><div><h3>Google Sheets</h3><div class="card-type">MCP extension</div></div></div><div class="analogy">Your Spreadsheet Operator</div><div class="desc">Direct read/write to Google Sheets. An assistant working on your spreadsheets via verbal instructions.</div><div class="tags"><span class="tag">read</span><span class="tag">write</span><span class="tag">formulas</span><span class="tag">collaboration</span></div></div>
+
+      <div class="card c-blue"><div class="card-head"><div class="icon-box">🧠</div><div><h3>Sequential Thinking</h3><div class="card-type">MCP extension</div></div></div><div class="analogy">Your Whiteboard</div><div class="desc">Structured multi-step reasoning. Index cards on a whiteboard connected with string. Architecture, risk, design decisions.</div><div class="tags"><span class="tag">reasoning</span><span class="tag">planning</span><span class="tag">architecture</span></div></div>
+
+      <div class="card c-blue"><div class="card-head"><div class="icon-box">🐘</div><div><h3>PostgreSQL</h3><div class="card-type">Docker MCP — 12 tools</div></div></div><div class="analogy">Your Database Hotline</div><div class="desc">Connected to amerix_dev via Docker MCP gateway. 12 tools: query, list tables, describe, execute SQL. 4 tables live. Query SaaS data conversationally.</div><div class="tags"><span class="tag">connected ✅</span><span class="tag">12 tools</span><span class="tag">amerix_dev</span><span class="tag">pgvector</span></div></div>
+    </div>
+  </div>
+
+  <div class="flow"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>connects to<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div>
+
+  <!-- ============ TIER 3: INFRASTRUCTURE ============ -->
+  <div class="tier">
+    <div class="tier-head"><span class="tier-label">Tier 3 — Infrastructure (the foundation everything runs on)</span><span class="tier-line"></span></div>
+    <div class="tier-desc">The building itself — plumbing, electrical, and foundation that makes everything possible.</div>
+    <div class="grid g3">
+      <div class="card c-green"><div class="card-head"><div class="icon-box">🐙</div><div><h3>GitHub</h3><div class="card-type">source control — Silas7458</div></div></div><div class="analogy">Your Vault with a Time Machine</div><div class="desc">All code lives here with complete change history. Bank vault where every document is versioned — rewind to any point.</div><div class="tags"><span class="tag">git v2.53</span><span class="tag">gh cli</span><span class="tag">repos</span><span class="tag">version history</span></div></div>
+
+      <div class="card c-green"><div class="card-head"><div class="icon-box">🚂</div><div><h3>Railway</h3><div class="card-type">cloud hosting — CLI v4.29.0</div></div></div><div class="analogy">Your Launchpad</div><div class="desc">Code → live on the internet. Databases, SSL, scaling handled. Deploy teammate pushes here automatically.</div><div class="tags"><span class="tag">deploy</span><span class="tag">postgres</span><span class="tag">environments</span><span class="tag">scaling</span></div></div>
+
+      <div class="card c-green"><div class="card-head"><div class="icon-box">🐳</div><div><h3>Docker</h3><div class="card-type">containerization + MCP gateway</div></div></div><div class="analogy">Your Shipping Container</div><div class="desc">Packages your app into a sealed container. Hosts the MCP Toolkit gateway connecting Claude to database, Gmail, and memory servers.</div><div class="tags"><span class="tag">containers</span><span class="tag">MCP gateway ✅</span><span class="tag">reproducible</span><span class="tag">portable</span></div></div>
+
+      <div class="card c-green"><div class="card-head"><div class="icon-box">⚡</div><div><h3>n8n</h3><div class="card-type">workflow automation</div></div></div><div class="analogy">Your Assembly Line</div><div class="desc">Visual automation — connect steps like LEGO. Client signup → BAA → email → account → notify. Connected to Gmail + Drive via OAuth.</div><div class="tags"><span class="tag">workflows</span><span class="tag">triggers</span><span class="tag">Gmail ✅</span><span class="tag">Drive ✅</span></div></div>
+
+      <div class="card c-green"><div class="card-head"><div class="icon-box">🟢</div><div><h3>Node.js</h3><div class="card-type">JavaScript runtime</div></div></div><div class="analogy">Your Engine Block</div><div class="desc">The engine powering web tools. Claude Code, your app, n8n all depend on it.</div><div class="tags"><span class="tag">npm</span><span class="tag">runtime</span><span class="tag">javascript</span></div></div>
+
+      <div class="card c-green"><div class="card-head"><div class="icon-box">🔀</div><div><h3>Git</h3><div class="card-type">version control — v2.53</div></div></div><div class="analogy">Your Time Machine</div><div class="desc">Local time-travel for code. Every snapshot ("commit") remembered. Create branches → merge or throw away.</div><div class="tags"><span class="tag">commits</span><span class="tag">branches</span><span class="tag">merge</span></div></div>
+    </div>
+  </div>
+
+  <div class="flow"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>when SaaS development begins, add<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div>
+
+  <!-- ============ TIER 4: DEV TOOLS (PLANNED) ============ -->
+  <div class="tier">
+    <div class="tier-head"><span class="tier-label">Tier 4 — Development Tools (added when coding begins)</span><span class="tier-line"></span></div>
+    <div class="tier-desc">Installed when you sit down to write SaaS code. Ready to deploy the moment you say "go."</div>
+    <div class="grid g3">
+      <div class="card c-purple planned"><span class="badge">PLANNED</span><div class="card-head"><div class="icon-box">✨</div><div><h3>Cursor IDE</h3><div class="card-type">visual code editor + AI</div></div></div><div class="analogy">Your Architect's Drafting Table</div><div class="desc">Visual code editor (VS Code fork) with AI. While Claude Code is the foreman on site, Cursor is where you see blueprints. ~$20/mo.</div><div class="tags"><span class="tag">VS Code fork</span><span class="tag">AI inline</span><span class="tag">debugging</span><span class="tag">file nav</span></div></div>
+
+      <div class="card c-purple planned"><span class="badge">PLANNED</span><div class="card-head"><div class="icon-box">🧪</div><div><h3>GitHub Actions</h3><div class="card-type">CI/CD pipeline</div></div></div><div class="analogy">Your Quality Inspector</div><div class="desc">Automated testing every push. Nothing ships until it passes. Critical for paying clients relying on Medicare data accuracy.</div><div class="tags"><span class="tag">auto tests</span><span class="tag">deploy gates</span><span class="tag">security</span><span class="tag">free</span></div></div>
+
+      <div class="card c-purple planned"><span class="badge">PLANNED</span><div class="card-head"><div class="icon-box">🛡️</div><div><h3>Sentry</h3><div class="card-type">error monitoring</div></div></div><div class="analogy">Your Alarm System</div><div class="desc">Watches live app 24/7, alerts before clients notice. Error at 2am? Sentry tells you exactly what broke.</div><div class="tags"><span class="tag">errors</span><span class="tag">alerts</span><span class="tag">performance</span><span class="tag">real-time</span></div></div>
+    </div>
+  </div>
+
+  <div class="flow"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>the SaaS platform will need<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div>
+
+  <!-- ============ TIER 5: SAAS SERVICES ============ -->
+  <div class="tier">
+    <div class="tier-head"><span class="tier-label">Tier 5 — SaaS Platform Services (the product's organs)</span><span class="tier-line"></span></div>
+    <div class="tier-desc">Internal organs of your SaaS — each handles a vital function your paying hospice clients depend on daily.</div>
+    <div class="grid g4">
+      <div class="card c-teal planned"><span class="badge">PLANNED</span><div class="card-head"><div class="icon-box">🐘</div><div><h3>PostgreSQL Database</h3><div class="card-type">data storage — Railway</div></div></div><div class="analogy">Your Fort Knox Filing Cabinet</div><div class="desc">All SaaS data: patients, CAP analyses, accounts, subscriptions, audit trails. Row-level security per hospice.</div><div class="tags"><span class="tag">HIPAA</span><span class="tag">patients</span><span class="tag">multi-tenant</span><span class="tag">audit trails</span></div></div>
+
+      <div class="card c-pink planned"><span class="badge">PLANNED</span><div class="card-head"><div class="icon-box">💳</div><div><h3>Stripe</h3><div class="card-type">payment processing</div></div></div><div class="analogy">Your Cash Register & Billing Dept</div><div class="desc">Subscriptions (Bronze/Silver/Gold), invoicing, payments, taxes, failed payment recovery.</div><div class="tags"><span class="tag">subscriptions</span><span class="tag">invoicing</span><span class="tag">3 tiers</span><span class="tag">webhooks</span></div></div>
+
+      <div class="card c-cyan planned"><span class="badge">PLANNED</span><div class="card-head"><div class="icon-box">🔐</div><div><h3>Clerk (Auth)</h3><div class="card-type">authentication & access</div></div></div><div class="analogy">Your Bouncer & Badge System</div><div class="desc">Who gets in and what they see. MFA, SSO, tier-level feature gating.</div><div class="tags"><span class="tag">login</span><span class="tag">MFA</span><span class="tag">roles</span><span class="tag">tier gating</span></div></div>
+
+      <div class="card c-orange planned"><span class="badge">PLANNED</span><div class="card-head"><div class="icon-box">📧</div><div><h3>SendGrid / Email</h3><div class="card-type">transactional email</div></div></div><div class="analogy">Your Mailroom</div><div class="desc">Welcome emails, password resets, CAP alerts, reports, BAA docs, receipts.</div><div class="tags"><span class="tag">notifications</span><span class="tag">alerts</span><span class="tag">onboarding</span></div></div>
+
+      <div class="card c-red planned"><span class="badge">PLANNED</span><div class="card-head"><div class="icon-box">✍️</div><div><h3>DocuSign / eSign</h3><div class="card-type">electronic signatures</div></div></div><div class="analogy">Your Digital Notary</div><div class="desc">Auto-generates BAAs, presents for e-signature, files copies. Frictionless onboarding.</div><div class="tags"><span class="tag">BAA</span><span class="tag">contracts</span><span class="tag">HIPAA</span></div></div>
+
+      <div class="card c-green planned"><span class="badge">PLANNED</span><div class="card-head"><div class="icon-box">📈</div><div><h3>Analytics</h3><div class="card-type">usage tracking</div></div></div><div class="analogy">Your Dashboard Cameras</div><div class="desc">Tracks how clients use the platform. Upsell signals and value proof at renewal.</div><div class="tags"><span class="tag">usage</span><span class="tag">engagement</span><span class="tag">upsell signals</span></div></div>
+
+      <div class="card c-yellow planned"><span class="badge">PLANNED</span><div class="card-head"><div class="icon-box">🌐</div><div><h3>Domain & SSL</h3><div class="card-type">internet address + encryption</div></div></div><div class="analogy">Your Street Address & Deadbolt</div><div class="desc">Custom domain (app.amerixmedical.com) + SSL. HIPAA-required encryption in transit.</div><div class="tags"><span class="tag">custom domain</span><span class="tag">SSL/TLS</span><span class="tag">HIPAA</span></div></div>
+
+      <div class="card c-slate planned"><span class="badge">PLANNED</span><div class="card-head"><div class="icon-box">🔮</div><div><h3>Expansion Slots</h3><div class="card-type">TBD</div></div></div><div class="analogy">Your Open Bays in the Garage</div><div class="desc">CDN, job queues, chat support, AI hosting. Empty bays designed for new equipment.</div><div class="tags"><span class="tag">CDN</span><span class="tag">queues</span><span class="tag">chat</span><span class="tag">AI hosting</span></div></div>
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item"><div class="dot active"></div>active — installed & configured</div>
+    <div class="legend-item"><div class="dot newdot"></div>new in v7 — deployed today</div>
+    <div class="legend-item"><div class="dot wait"></div>waiting — installed, needs dependency</div>
+    <div class="legend-item"><div class="dot eval"></div>evaluate — research & install when ready</div>
+    <div class="legend-item"><div class="dot future"></div>planned — added when SaaS begins</div>
+  </div>
+
+</div>
+</body>
+</html>
