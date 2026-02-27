@@ -190,7 +190,7 @@
 
   <div class="header">
     <h1>🏗️ Amerix Development Toolkit</h1>
-    <div class="sub">v11 · Last updated: February 23, 2026 · Council Engine live (19 workflows, 14 tables, 8 endpoints), Context Authority Phase 1, Sister decommissioned, 3-agent team + autonomous deliberation, video analysis pipelines</div>
+    <div class="sub">v12 · Last updated: February 27, 2026 · Discord MCP + Google Drive MCP added, silas-ai-toolkit public repo, RLM integration, deliverable coordination protocol, agent-first context conservation, 3-agent team + Council Engine</div>
   </div>
 
   <div class="hub">
@@ -203,7 +203,7 @@
 
   <!-- ============ TANDEM TEAM ============ -->
   <div class="special-section ss-amber">
-    <div class="sec-badge">🤝 Updated v11</div>
+    <div class="sec-badge">🤝 Updated v12</div>
     <div class="sec-title">The Tandem Family Team — 3-Agent + Council Engine</div>
     <div class="sec-analogy">⟶ One Brain, Three Sets of Hands, One Autonomous Deliberation Engine</div>
     <div class="sec-desc">The Tandem Team is a real-time multi-agent coordination system running on Silas's desktop. Three AI agents share context via archives, briefing files, morning briefs, and direct terminal communication. Proctor sees the screen and coordinates, Brother builds in the CLI terminal, Step Brother runs quick code in the Desktop Code tab. <strong>Sister was decommissioned 2/21</strong> — replaced by the Council Engine, an n8n-hosted autonomous deliberation system running in Docker. Browser automation is handled by Playwright MCP (available to all agents). Silas says <strong>"hey team"</strong> and they activate together. Cross-window typing between agents is solved. The Council Engine runs 24/7, surviving session resets, maintaining state in PostgreSQL. A cinematic visualization of the system is live at <a href="https://silas7458.github.io/amerix-pages/tandem-team.html" style="color:var(--amber)">silas7458.github.io/amerix-pages/tandem-team.html</a>.</div>
@@ -213,7 +213,7 @@
       <div class="team-arrow">→</div>
       <div class="team-node proctor"><div class="tn-icon">🎛️</div><div class="tn-name">Proctor</div><div class="tn-role">Mission Control</div><div class="tn-desc">Claude Desktop (Chat). Types into Brother's terminal via Windows-MCP. Plans strategy, relays tasks, monitors via Shell + Clipboard grab. Reads morning briefs on startup.</div></div>
       <div class="team-arrow">↔</div>
-      <div class="team-node"><div class="tn-icon">⚡</div><div class="tn-name">Brother</div><div class="tn-role">Builder (CLI)</div><div class="tn-desc">Claude Code terminal. 9 plugins active, 4 MCP servers. Writes code, builds servers, runs tests. Can type into Proctor's chat. The muscle.</div></div>
+      <div class="team-node"><div class="tn-icon">⚡</div><div class="tn-name">Brother</div><div class="tn-role">Builder (CLI)</div><div class="tn-desc">Claude Code terminal. 9 plugins active, 6 MCP servers (incl. Discord + Google Drive). Writes code, builds servers, runs tests. Agent-first protocol. The muscle.</div></div>
       <div class="team-arrow">↔</div>
       <div class="team-node"><div class="tn-icon">🔧</div><div class="tn-name">Step Brother</div><div class="tn-role">Quick Code</div><div class="tn-desc">Claude Desktop (Code tab). Fast code execution within Desktop. Shares context with Proctor in same window.</div></div>
       <div class="team-arrow">↔</div>
@@ -221,7 +221,7 @@
     </div>
 
     <div class="info-boxes">
-      <div class="info-box ib-amber"><h4>📡 Communication</h4><p>Proctor → Brother via Windows-MCP terminal typing. Brother → Proctor via chat input typing. Council Engine → Agents via briefing files + PostgreSQL. Shared: session-state.md, morning briefs, notification queues.</p></div>
+      <div class="info-box ib-amber"><h4>📡 Communication</h4><p>Primary: Discord #handoffs (bot-driven async via Discord MCP). Fallback: Proctor → Brother via Windows-MCP terminal typing. Council Engine → Agents via briefing files + PostgreSQL. Shared: session-state.md, morning briefs, deliverables folder.</p></div>
       <div class="info-box ib-amber"><h4>👁️ Brother Check Protocol</h4><p>Proctor monitors Brother via: (1) Shell commands to check files on disk, (2) Clipboard grab (Ctrl+A → Ctrl+Shift+C → Clipboard get) for terminal text, (3) Vision snapshot only if visual element needed. No more screenshot-scroll loops.</p></div>
       <div class="info-box ib-amber"><h4>🌅 Morning Briefs</h4><p>Context Authority generates role-specific morning briefs every 4 hours. Agents read ONE file on startup instead of 4-5. CLAUDE.md dynamically injected with current status via sentinel markers + scheduled task.</p></div>
       <div class="info-box ib-amber"><h4>📊 Eisenhower Matrix</h4><p>Standing prioritization logic for all agents. Tasks categorized by urgency × importance. Applied to tool decisions, task ordering, inbox triage. Added to all CLAUDE.md files.</p></div>
@@ -253,7 +253,7 @@
 
   <!-- ============ CONTEXT AUTHORITY ============ -->
   <div class="special-section ss-purple">
-    <div class="sec-badge">🧭 New v11</div>
+    <div class="sec-badge">🧭 Updated v12</div>
     <div class="sec-title">Context Authority — Unified Session Intelligence</div>
     <div class="sec-analogy">⟶ Your Morning Newspaper That Writes Itself</div>
     <div class="sec-desc">Ensures every agent starts every session with perfect context — no more reading 4-5 files manually and still missing critical state. The Morning Brief Generator (n8n workflow, every 4 hours + on-demand webhook) produces role-specific briefings with structured sections: ACTION REQUIRED, CURRENT STATE, PROTOCOLS, HISTORY, LESSONS, CHECKLIST. CLAUDE.md is dynamically injected with current status via sentinel markers and a Windows Scheduled Task. Emergency fallback file provides core identity + protocols even if all automation fails.</div>
@@ -263,6 +263,7 @@
       <div class="info-box ib-purple"><h4>📝 CLAUDE.md Injection</h4><p>Inject-ClaudeMd.ps1 + Windows Scheduled Task (every 4h starting 6:15 AM). Reads staging file, backs up CLAUDE.md, injects between CONTEXT-AUTHORITY:START/END sentinel markers. Safe, reversible, versioned.</p></div>
       <div class="info-box ib-purple"><h4>🚨 Emergency Fallback</h4><p>emergency-context.md — static file with core identity, protocols, and regen instructions. If morning brief is missing or >48h old, agents read this instead. Always available, never auto-modified.</p></div>
       <div class="info-box ib-purple"><h4>📊 Session Logging</h4><p>session_log table in PostgreSQL tracks session acks and checkpoints. Phase 2 planned: startup ack receiver, missed-ack detection, checkpoint write system.</p></div>
+      <div class="info-box ib-purple"><h4>📦 Deliverable Coordination</h4><p>Shared deliverables folder (claude-context/deliverables/) with naming convention and Discord #handoffs notifications. All agents write to one location — no duplicates, no lost files.</p></div>
     </div>
   </div>
 
@@ -276,7 +277,7 @@
     <div class="info-boxes">
       <div class="info-box ib-rose"><h4>🗄️ CC-v3 Memory</h4><p>26+ lessons stored with embeddings. PostgreSQL + pgvector backend. Hybrid vector + BM25 search. Memory API on port 8100 (manual start via start-memory-api.cmd). /recall + /remember slash commands. 3 hooks wired.</p></div>
       <div class="info-box ib-rose"><h4>⚡ 19 n8n Workflows</h4><p>Original 8 (lesson extraction, knowledge writes, 3 briefing generators, weekly audit, Cloud Archive Sync, Automated Librarian) + 11 Council Engine workflows (deliberation, heartbeat, auto-export, error handler, morning brief generator, and more). All 19 active on port 5678.</p></div>
-      <div class="info-box ib-rose"><h4>📋 Morning Briefings</h4><p>Auto-generated every 20 min at claude-context/briefings/: briefing-proctor.md, briefing-brother.md, briefing-sister.md. Compact, role-specific, pre-computed. Post-preflight context dropped from 33% to 26%.</p></div>
+      <div class="info-box ib-rose"><h4>📋 Morning Briefings</h4><p>Auto-generated every 20 min at claude-context/briefings/: briefing-proctor.md, briefing-brother.md. Compact, role-specific, pre-computed. Post-preflight context dropped from 33% to 26%.</p></div>
       <div class="info-box ib-rose"><h4>🔄 Closed Loop</h4><p>Agents log → n8n extracts → CC-v3 stores → n8n generates briefings → agents read. No manual discipline required. Automated write side solves the discipline problem.</p></div>
     </div>
   </div>
@@ -307,11 +308,11 @@
   <div class="special-section ss-green">
     <div class="sec-badge">📊 Status Report</div>
     <div class="sec-title">Build Progress — Infrastructure + Council Engine</div>
-    <div class="sec-analogy">⟶ Foundation Poured, Engine Running, Deliberation Autonomous, Context Self-Healing, Video Pipelines Live</div>
-    <div class="sec-desc">Nineteen days of infrastructure work (Feb 5–23) have connected all systems, established 3-agent + Council Engine coordination, built 19 n8n workflows across 14 PostgreSQL tables, shipped Context Authority Phase 1 (auto-generated morning briefs + CLAUDE.md injection), launched video analysis pipelines for TikTok and YouTube, and decommissioned the VM-based Sister role. The platform is autonomous — Council Engine deliberates without sessions, morning briefs generate without agents, heartbeats monitor without humans.</div>
+    <div class="sec-analogy">⟶ Foundation Poured, Engine Running, Discord Comms Live, Drive Connected, Public Repo Shipped</div>
+    <div class="sec-desc">Twenty-two days of infrastructure work (Feb 5–27) have connected all systems, established 3-agent + Council Engine coordination with Discord as primary comms, built 19 n8n workflows across 14 PostgreSQL tables, shipped Context Authority Phase 1, launched video analysis pipelines, added Discord MCP + Google Drive MCP, published silas-ai-toolkit to GitHub, and integrated RLM for large document processing. The platform is autonomous — Council Engine deliberates without sessions, morning briefs generate without agents, deliverables coordinate through a shared folder + Discord notifications.</div>
 
     <div class="progress-stats">
-      <div class="stat-box"><div class="stat-num green">24</div><div class="stat-label">Systems Online</div></div>
+      <div class="stat-box"><div class="stat-num green">26</div><div class="stat-label">Systems Online</div></div>
       <div class="stat-box"><div class="stat-num amber">3</div><div class="stat-label">Partial / Pending</div></div>
       <div class="stat-box"><div class="stat-num dim">8</div><div class="stat-label">Planned (SaaS Phase)</div></div>
     </div>
@@ -502,9 +503,9 @@
 
       <div class="card c-cyan"><span class="newbadge">UPGRADED v10</span><div class="card-head"><div class="icon-box">🎛️</div><div><h3>Proctor (Mission Control)</h3><div class="card-type">claude desktop chat + windows-MCP</div></div></div><div class="analogy">Your Mission Control Room</div><div class="desc">Claude Desktop Chat tab. Types directly into Brother's terminal via Windows-MCP. Reads auto-generated briefings on startup. Coordinates 4-agent Tandem Team. Switches between tool profiles. Uses launcher wrapper for reliable Windows-MCP startup.</div><div class="tags"><span class="tag">windows-MCP ★</span><span class="tag">5 profiles</span><span class="tag">tandem lead</span><span class="tag">cold-start</span><span class="tag">briefings</span></div></div>
 
-      <div class="card c-amber"><span class="newbadge">UPDATED v11</span><div class="card-head"><div class="icon-box">⚡</div><div><h3>Brother (Claude Code CLI)</h3><div class="card-type">terminal agent + 9 plugins + 4 MCP servers</div></div></div><div class="analogy">Your Construction Foreman</div><div class="desc">Runs in terminal. 9 active plugins, 4 MCP servers. Built Council Engine (19 workflows), Context Authority, video analysis pipelines. Agent Teams + GSD enabled. Can type into Proctor's chat. ENABLE_TOOL_SEARCH defers tool loading.</div><div class="tags"><span class="tag">9 plugins</span><span class="tag">4 MCP servers</span><span class="tag">agent teams ✅</span><span class="tag">GSD ✅</span><span class="tag">Council Engine</span><span class="tag">Context Authority</span></div></div>
+      <div class="card c-amber"><span class="newbadge">UPDATED v12</span><div class="card-head"><div class="icon-box">⚡</div><div><h3>Brother (Claude Code CLI)</h3><div class="card-type">terminal agent + 9 plugins + 6 MCP servers</div></div></div><div class="analogy">Your Construction Foreman</div><div class="desc">Runs in terminal. 9 active plugins, 6 MCP servers (Docker, Playwright, n8n, Discord, Google Drive, Windows). Built Council Engine (19 workflows), Context Authority, video analysis pipelines. Agent Teams + GSD enabled. Agent-first protocol for context conservation.</div><div class="tags"><span class="tag">9 plugins</span><span class="tag">6 MCP servers</span><span class="tag">agent teams ✅</span><span class="tag">GSD ✅</span><span class="tag">Discord MCP</span><span class="tag">Google Drive MCP</span></div></div>
 
-      <div class="card c-green"><span class="newbadge">NEW v8 · ACTIVE v9</span><div class="card-head"><div class="icon-box">🔧</div><div><h3>Step Brother (Code Tab)</h3><div class="card-type">claude desktop code tab</div></div></div><div class="analogy">Your Quick-Draw Coder</div><div class="desc">Claude Desktop Code tab. Quick code execution within the Desktop app without switching to a full terminal. Shares context with Proctor and Sister in the same window.</div><div class="tags"><span class="tag">desktop code</span><span class="tag">quick execution</span><span class="tag">shared context</span></div></div>
+      <div class="card c-green"><span class="newbadge">NEW v8 · ACTIVE v9</span><div class="card-head"><div class="icon-box">🔧</div><div><h3>Step Brother (Code Tab)</h3><div class="card-type">claude desktop code tab</div></div></div><div class="analogy">Your Quick-Draw Coder</div><div class="desc">Claude Desktop Code tab. Quick code execution within the Desktop app without switching to a full terminal. Shares context with Proctor in the same window.</div><div class="tags"><span class="tag">desktop code</span><span class="tag">quick execution</span><span class="tag">shared context</span></div></div>
 
       <div class="card c-pink" style="opacity:0.35; border-style:dashed;"><span class="disabledbadge">DECOMMISSIONED 2/21</span><div class="card-head"><div class="icon-box">📋</div><div><h3>Sister (Cowork)</h3><div class="card-type">claude desktop cowork tab — RETIRED</div></div></div><div class="analogy" style="text-decoration:line-through;">Your Operations Manager</div><div class="desc">Decommissioned 2/21. VM-based coordination added latency, RDP fragility, and connection failures. Replaced by Council Engine (autonomous n8n deliberation) which runs 24/7 in Docker without session dependencies.</div><div class="tags"><span class="tag">RETIRED</span><span class="tag">→ Council Engine</span></div></div>
 
@@ -571,9 +572,13 @@
     <div class="grid g3">
       <div class="card c-lime"><div class="card-head"><div class="icon-box">📄</div><div><h3>CLAUDE.md</h3><div class="card-type">project configuration file</div></div></div><div class="analogy">The Building's Master Blueprint</div><div class="desc">Markdown file in project root. Every Claude Code session and Agent Teams teammate reads on startup. Full tech stack, schema, business rules, bash safety patterns (banned .NET method calls, timeout guards), Eisenhower Matrix protocol.</div><div class="tags"><span class="tag">tech stack</span><span class="tag">bash safety</span><span class="tag">Eisenhower</span><span class="tag">auto-loaded</span></div></div>
 
-      <div class="card c-lime"><span class="newbadge">UPDATED v9</span><div class="card-head"><div class="icon-box">📂</div><div><h3>Context + Archives + Briefings</h3><div class="card-type">reference docs + session memory + auto-briefs</div></div></div><div class="analogy">The Company Knowledge Base</div><div class="desc"><strong>General:</strong> claude-context\ <strong>SaaS:</strong> amerix-saas\context\ — Plus: claude-archive.md, session-state.md, notification queues, and <strong>auto-generated briefing files</strong> (briefing-proctor.md, briefing-brother.md, briefing-sister.md) from the n8n Team Memory System. tool-library.md catalogs disabled tools.</div><div class="tags"><span class="tag">archives</span><span class="tag">auto-briefings</span><span class="tag">tool-library.md</span><span class="tag">notification queues</span></div></div>
+      <div class="card c-lime"><span class="newbadge">UPDATED v9</span><div class="card-head"><div class="icon-box">📂</div><div><h3>Context + Archives + Briefings</h3><div class="card-type">reference docs + session memory + auto-briefs</div></div></div><div class="analogy">The Company Knowledge Base</div><div class="desc"><strong>General:</strong> claude-context\ <strong>SaaS:</strong> amerix-saas\context\ — Plus: claude-archive.md, session-state.md, notification queues, and <strong>auto-generated briefing files</strong> (briefing-proctor.md, briefing-brother.md) from the n8n Team Memory System. tool-library.md catalogs disabled tools.</div><div class="tags"><span class="tag">archives</span><span class="tag">auto-briefings</span><span class="tag">tool-library.md</span><span class="tag">notification queues</span></div></div>
 
       <div class="card c-lime"><div class="card-head"><div class="icon-box">🖥️</div><div><h3>WSL + tmux</h3><div class="card-type">linux subsystem + terminal multiplexer</div></div></div><div class="analogy">The Split-Screen Security Monitor</div><div class="desc"><strong>WSL</strong> runs Linux inside Windows. <strong>tmux</strong> splits your screen into panes so you watch multiple Agent Teams teammates working side by side.</div><div class="tags"><span class="tag">Ubuntu</span><span class="tag">split panes</span><span class="tag">side-by-side</span><span class="tag">agent visibility</span></div></div>
+
+      <div class="card c-lime"><span class="newbadge">NEW v12</span><div class="card-head"><div class="icon-box">📄</div><div><h3>RLM (Recursive Language Models)</h3><div class="card-type">pip package — large document processing</div></div></div><div class="analogy">Your Anti-Context-Rot Shield</div><div class="desc">Wrapper for processing massive documents without context rot. Recursively chunks and processes, then synthesizes results. Claude-native. <code>pip install rlms</code>. Part of silas-ai-toolkit.</div><div class="tags"><span class="tag">pip install rlms</span><span class="tag">large docs</span><span class="tag">recursive</span><span class="tag">Claude-native</span></div></div>
+
+      <div class="card c-lime"><span class="newbadge">NEW v12</span><div class="card-head"><div class="icon-box">📦</div><div><h3>Deliverable Coordination</h3><div class="card-type">protocol — shared folder + notifications</div></div></div><div class="analogy">Your Shared Outbox</div><div class="desc">Shared deliverables folder with naming convention ({date}-{agent}-{topic}.{ext}) and Discord #handoffs notifications. All agents write to one location. No duplicate work, no lost files.</div><div class="tags"><span class="tag">deliverables\</span><span class="tag">#handoffs</span><span class="tag">naming convention</span><span class="tag">PROTOCOL.md</span></div></div>
     </div>
   </div>
 
@@ -584,6 +589,8 @@
     <div class="tier-head"><span class="tier-label">Resource Repos (community tools — install when SaaS build starts)</span><span class="tier-line"></span></div>
     <div class="tier-desc">Open-source repos from the Claude Code community. Evaluate and install as needed for SaaS development.</div>
     <div class="grid g3">
+      <div class="card c-indigo" style="animation-delay:0s"><span class="newbadge">NEW v12</span><a href="https://github.com/Silas7458/silas-ai-toolkit" style="text-decoration:none;color:inherit;display:block"><div class="card-head"><div class="icon-box">🧰</div><div><h3>silas-ai-toolkit</h3><div class="card-type">Silas7458/silas-ai-toolkit</div></div></div><div class="analogy">Your Public AI Toolbox</div><div class="desc">Public GitHub repo of AI tools: RLM query wrapper, TikTok/YouTube video analysis pipelines, Claude Code power user toolkit. Blueprints and utilities shared with the community.</div><div class="tags"><span class="tag">RLM wrapper</span><span class="tag">video pipelines</span><span class="tag">Claude Code</span><span class="tag">public repo</span></div></a></div>
+
       <div class="card c-indigo evaluate" style="animation-delay:0.05s"><span class="badge">INSTALL NOW</span><span class="stars">⭐ JSNation</span><div class="card-head"><div class="icon-box">📦</div><div><h3>Repomix</h3><div class="card-type">yamadashy/repomix</div></div></div><div class="analogy">Your Codebase Photocopier for AI</div><div class="desc">Packs your entire codebase into a single AI-friendly file. When your SaaS has 50+ files and you want to ask Claude.ai about it — one file with everything.</div><div class="tags"><span class="tag">npx repomix</span><span class="tag">one-file output</span><span class="tag">token counting</span></div></div>
 
       <div class="card c-indigo evaluate" style="animation-delay:0.1s"><span class="badge">EVALUATE</span><span class="stars">⭐ 13.9k</span><div class="card-head"><div class="icon-box">🌊</div><div><h3>Claude-Flow</h3><div class="card-type">ruvnet/claude-flow</div></div></div><div class="analogy">Your War Room with Memory</div><div class="desc">Enterprise orchestration. Cross-session learning, swarm intelligence, 87+ MCP tools. Adds a war room with persistent memory on top of Agent Teams + GSD.</div><div class="tags"><span class="tag">swarm</span><span class="tag">persistent memory</span><span class="tag">87 MCP tools</span></div></div>
@@ -603,7 +610,7 @@
   <!-- ============ TIER 2: PROCTOR MCP EXTENSIONS ============ -->
   <div class="tier">
     <div class="tier-head"><span class="tier-label">Tier 2 — The Proctor's Arsenal (Active MCP + Disabled Library)</span><span class="tier-line"></span></div>
-    <div class="tier-desc">Active MCP servers trimmed to 3. Disabled tools cataloged in tool-library.md with re-enable instructions. Windows-MCP is non-negotiable.</div>
+    <div class="tier-desc">6 active MCP servers (Windows, Docker Gateway, n8n, Playwright, Discord, Google Drive). Disabled tools cataloged in tool-library.md. Windows-MCP is non-negotiable.</div>
     <div class="grid g3">
       <div class="card c-blue"><div class="card-head"><div class="icon-box">🖥️</div><div><h3>Windows MCP ★</h3><div class="card-type">MCP — 11 tools — MANDATORY</div></div></div><div class="analogy">Proctor's Eyes & Hands</div><div class="desc">MANDATORY in every profile. Uses launcher wrapper (windows-mcp-launcher.cmd) that cleans comtypes cache before startup. Screenshot, click, type, PowerShell, app launch. Required for all cross-window coordination.</div><div class="tags"><span class="tag">MANDATORY ★</span><span class="tag">launcher wrapper</span><span class="tag">click</span><span class="tag">type</span><span class="tag">powershell</span></div></div>
 
@@ -614,6 +621,10 @@
       <div class="card c-blue" style="opacity:0.5"><span class="disabledbadge">IN LIBRARY</span><div class="card-head"><div class="icon-box">🔍</div><div><h3>Tool Router MCP</h3><div class="card-type">custom MCP — DISABLED</div></div></div><div class="analogy">Superseded</div><div class="desc">BM25 search over 34-tool registry. Built Feb 12, disabled Feb 16. Superseded by ENABLE_TOOL_SEARCH env var which defers tool loading natively. Re-enable instructions in tool-library.md.</div><div class="tags"><span class="tag">DISABLED</span><span class="tag">superseded</span><span class="tag">tool-library.md</span></div></div>
 
       <div class="card c-blue"><span class="newbadge">NEW v10</span><div class="card-head"><div class="icon-box">🎭</div><div><h3>Playwright MCP</h3><div class="card-type">MCP — browser automation — ACTIVE</div></div></div><div class="analogy">Your Web Autopilot</div><div class="desc">Microsoft's official Playwright MCP. DOM-based browser control — reads accessibility tree, not screenshots. Handles forms, dropdowns, navigation, scraping. Replaced Browser Use MCP. Shared across all agents via Claude Code config.</div><div class="tags"><span class="tag">ACTIVE ✅</span><span class="tag">@playwright/mcp</span><span class="tag">DOM-based</span><span class="tag">microsoft</span></div></div>
+
+      <div class="card c-blue"><span class="newbadge">NEW v12</span><div class="card-head"><div class="icon-box">💬</div><div><h3>Discord MCP</h3><div class="card-type">MCP — team communication — ACTIVE</div></div></div><div class="analogy">Your Team Radio Channel</div><div class="desc">Team communication backbone. Bot-driven async messaging across #handoffs, session logs, and alerts. Replaces file-based inboxes as primary comms channel. All agents post through Tandem Bot.</div><div class="tags"><span class="tag">ACTIVE ✅</span><span class="tag">#handoffs</span><span class="tag">async comms</span><span class="tag">Tandem Bot</span></div></div>
+
+      <div class="card c-blue"><span class="newbadge">NEW v12</span><div class="card-head"><div class="icon-box">📁</div><div><h3>Google Drive MCP</h3><div class="card-type">MCP — file management — ACTIVE</div></div></div><div class="analogy">Your Cloud Filing Cabinet</div><div class="desc">Read, write, search, and manage Google Drive files. OAuth via executive.shelton@gmail.com. Supports Sheets, Docs, Slides, and file uploads. Powers Cloud Archive Sync and deliverable sharing.</div><div class="tags"><span class="tag">ACTIVE ✅</span><span class="tag">OAuth</span><span class="tag">Sheets</span><span class="tag">Docs</span><span class="tag">Slides</span></div></div>
 
       <div class="card c-blue" style="opacity:0.5"><span class="disabledbadge">IN LIBRARY</span><div class="card-head"><div class="icon-box">🚂</div><div><h3>Railway MCP</h3><div class="card-type">cloud hosting — DISABLED</div></div></div><div class="analogy">Dormant Launchpad</div><div class="desc">Deploy, manage environments, check logs. Disabled — not needed until SaaS development begins. Re-enable instructions in tool-library.md.</div><div class="tags"><span class="tag">DISABLED</span><span class="tag">dormant</span><span class="tag">SaaS phase</span></div></div>
     </div>
@@ -686,8 +697,17 @@
     <div class="sec-title">Version History</div>
 
     <div style="margin-bottom: 24px;">
-      <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--cyan); font-weight: 600; margin-bottom: 8px;">v11 — February 23, 2026</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--cyan); font-weight: 600; margin-bottom: 8px;">v12 — February 27, 2026</div>
       <div style="font-size: 12.5px; color: #7e84aa; line-height: 1.8; padding-left: 16px; border-left: 2px solid rgba(34,211,238,0.2);">
+        <strong style="color: var(--green);">Added:</strong> Discord MCP — team communication backbone replacing file-based inboxes · Google Drive MCP — full Drive access via OAuth (executive.shelton@gmail.com) · silas-ai-toolkit GitHub repo — public collection of AI tools and blueprints · RLM (Recursive Language Models) integration for large document processing · Deliverable coordination protocol with shared folder + Discord notifications · Context Conservation playbook — agent-first protocol for maximizing session lifespan<br>
+        <strong style="color: var(--cyan);">Changed:</strong> Brother MCP server count: 4 → 6 · Hub system count: 24 → 26 · Primary comms channel: file-based inboxes → Discord #handoffs · Tier 2 active MCP servers: 3 → 6 · Context Authority section updated with deliverable coordination<br>
+        <strong style="color: var(--text-muted);">Removed:</strong> (none)
+      </div>
+    </div>
+
+    <div style="margin-bottom: 24px;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-dim); font-weight: 600; margin-bottom: 8px;">v11 — February 23, 2026</div>
+      <div style="font-size: 12.5px; color: #5a6088; line-height: 1.8; padding-left: 16px; border-left: 2px solid rgba(90,96,136,0.2);">
         <strong style="color: var(--green);">Added:</strong> Council Engine section (19 n8n workflows, 14 PostgreSQL tables, 8 authenticated API endpoints, dual-persona deliberation, heartbeat monitor, auto-export, error retry) · Context Authority section (morning brief generator every 4h, CLAUDE.md dynamic injection via sentinel markers + scheduled task, emergency fallback file, session_log table, filesystem backup versioning) · YouTube Video Analysis pipeline (infrastructure built, process-video.py, 15s keyframe interval) · Brother Check Protocol (Shell + Clipboard grab replaces screenshot-scroll loops) · Decision log<br>
         <strong style="color: var(--cyan);">Changed:</strong> Tandem Team: 4 agents → 3 agents + Council Engine · n8n workflows: 8 → 19 · PostgreSQL tables: expanded to 14 · TikTok pipeline: "built" → "fully operational" (3 videos processed, Google Drive synced, Claude Project curated) · Progress stats: 21 → 24 systems online · Proctor monitoring: screenshot loops → Shell + Clipboard protocol · Morning briefings: role-specific auto-generated every 4h (up from 20min briefing-only) · CLAUDE.md: now dynamically injected with current status<br>
         <strong style="color: var(--text-muted);">Removed:</strong> Sister agent (decommissioned 2/21 — VM added latency, RDP fragility, 8+ init failures in a row; replaced by Council Engine running 24/7 in Docker)
@@ -726,7 +746,7 @@
   <!-- LEGEND -->
   <div class="legend">
     <div class="legend-item"><div class="dot active"></div>active — installed & configured</div>
-    <div class="legend-item"><div class="dot newdot"></div>new/updated in v11</div>
+    <div class="legend-item"><div class="dot newdot"></div>new/updated in v12</div>
     <div class="legend-item"><div class="dot disabled"></div>disabled — in tool-library.md</div>
     <div class="legend-item"><div class="dot wait"></div>partial — needs work</div>
     <div class="legend-item"><div class="dot eval"></div>evaluate — research & install</div>
