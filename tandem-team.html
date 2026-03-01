@@ -68,7 +68,7 @@ let sceneTime = 0;
 let globalAlpha = 1;
 
 const C = {
-  proctor: '#6366f1', brother: '#f59e0b', stepbro: '#10b981',
+  proctor: '#6366f1', brother: '#f59e0b', council: '#10b981',
   sister: '#ec4899', playwright: '#06b6d4', silas: '#f97316',
   text: '#e2e8f0', dim: '#475569', bg: '#0a0e1a', panel: '#1e293b',
   accent: '#a5b4fc', wmcp: '#8b5cf6', archive: '#34d399',
@@ -78,8 +78,8 @@ const teammates = {
   silas:    { emoji: '👤', label: 'SILAS', sub: 'CEO', color: C.silas, x: 0, y: 0 },
   proctor:  { emoji: '🎯', label: 'PROCTOR', sub: 'Chat Hub', color: C.proctor, x: 0, y: 0 },
   brother:  { emoji: '⚡', label: 'BROTHER', sub: 'CLI Terminal', color: C.brother, x: 0, y: 0 },
-  stepbro:  { emoji: '🔧', label: 'STEP BRO', sub: 'Code Tab', color: C.stepbro, x: 0, y: 0 },
-  sister:   { emoji: '📋', label: 'SISTER', sub: 'Cowork Tab', color: C.sister, x: 0, y: 0 },
+  sister:   { emoji: '🔗', label: 'SISTER 2.0', sub: 'RC Window', color: C.sister, x: 0, y: 0 },
+  council:  { emoji: '⚙️', label: 'COUNCIL', sub: 'n8n Engine', color: C.council, x: 0, y: 0 },
 };
 
 let packets = [];
@@ -117,7 +117,7 @@ const SCENES = [
       ctx.font = '16px system-ui'; ctx.fillStyle = C.dim;
       ctx.fillText('Amerix Medical Consulting — Multi-AI System', cx, cy - 25);
       ctx.globalAlpha = 1;
-      const ids = ['silas', 'proctor', 'brother', 'stepbro', 'sister'];
+      const ids = ['silas', 'proctor', 'brother', 'sister', 'council'];
       ids.forEach((id, i) => {
         const appear = t - 80 - i * 35;
         if (appear > 0) {
@@ -129,9 +129,9 @@ const SCENES = [
       if (t > 200) {
         ctx.globalAlpha = Math.min((t - 200) / 40, 1);
         ctx.font = '14px system-ui'; ctx.fillStyle = C.accent; ctx.textAlign = 'center';
-        ctx.fillText('Four AI teammates working in concert, orchestrated by Proctor', cx, cy + 30);
+        ctx.fillText('Four members working in concert, orchestrated by Proctor', cx, cy + 30);
         ctx.fillStyle = C.dim; ctx.font = '12px system-ui';
-        ctx.fillText('Silas communicates through Proctor, who coordinates the entire family', cx, cy + 52);
+        ctx.fillText('Sister 2.0 shares Brother\'s brain — Council automates the rest', cx, cy + 52);
         ctx.globalAlpha = 1;
       }
     }
@@ -150,7 +150,7 @@ const SCENES = [
         drawCaption('Proctor reads the task, decides WHO should handle it, and HOW', cx, H * 0.12, C.text, 16);
         const arrowT = t - 180;
         if (arrowT > 0) {
-          ['brother', 'stepbro', 'sister'].forEach((id, i) => {
+          ['brother', 'sister', 'council'].forEach((id, i) => {
             if (arrowT > i * 25) drawDashedLine(teammates.proctor, teammates[id], teammates[id].color, Math.min((arrowT - i * 25) / 20, 0.3));
           });
         }
@@ -195,17 +195,17 @@ const SCENES = [
     }
   },
   {
-    name: 'EXAMPLE: DOCUMENTS & CODE', duration: 480,
+    name: 'EXAMPLE: CODE + AUTOMATION', duration: 480,
     setup() { unhighlightAll(); highlight('silas'); highlight('proctor'); },
     run(t) {
       drawAllTeammates();
-      if (t < 70) drawCaption('EXAMPLE: Silas needs an A/R report AND a quick data transform script', cx, H * 0.12, C.silas, 15);
-      if (t === 30) sendPacket('silas', 'proctor', '"Report + script needed"', C.silas, 0.015);
-      if (t > 80 && t < 160) drawThinkBubble(teammates.proctor, 'Two tasks → Sister + Step Brother');
-      if (t > 140 && t < 220) { drawCaption('Proctor splits the work — document to Sister, code to Step Brother', cx, H * 0.12, C.text, 15); highlight('sister'); highlight('stepbro'); }
-      if (t === 160) { sendPacket('proctor', 'sister', 'DOC TASK', C.sister, 0.012); sendPacket('proctor', 'stepbro', 'CODE TASK', C.stepbro, 0.012); }
-      if (t > 210 && t < 350) { drawCaption('They work in PARALLEL — same Desktop app, different tabs', cx, H * 0.12, C.accent, 15); drawWorkingIndicator(teammates.sister, t); drawWorkingIndicator(teammates.stepbro, t); drawDesktopGroup(t - 210); }
-      if (t === 330) { sendPacket('sister', 'proctor', '.DOCX READY', C.sister, 0.012); sendPacket('stepbro', 'proctor', 'SCRIPT READY', C.stepbro, 0.012); }
+      if (t < 70) drawCaption('EXAMPLE: Silas needs a data transform script AND automated daily briefings', cx, H * 0.12, C.silas, 15);
+      if (t === 30) sendPacket('silas', 'proctor', '"Script + auto-brief needed"', C.silas, 0.015);
+      if (t > 80 && t < 160) drawThinkBubble(teammates.proctor, 'Code → Brother, automation → Council');
+      if (t > 140 && t < 220) { drawCaption('Proctor splits the work — code to Brother, scheduled tasks to Council', cx, H * 0.12, C.text, 15); highlight('brother'); highlight('council'); }
+      if (t === 160) { sendPacket('proctor', 'brother', 'CODE TASK', C.brother, 0.012); sendPacket('proctor', 'council', 'WORKFLOW TASK', C.council, 0.012); }
+      if (t > 210 && t < 350) { drawCaption('They work in PARALLEL — Brother codes while Council configures n8n workflows', cx, H * 0.12, C.accent, 15); drawWorkingIndicator(teammates.brother, t); drawWorkingIndicator(teammates.council, t); }
+      if (t === 330) { sendPacket('brother', 'proctor', 'SCRIPT READY', C.brother, 0.012); sendPacket('council', 'proctor', 'WORKFLOW LIVE', C.council, 0.012); }
       if (t > 380) { drawCaption('Both deliverables arrive → Proctor combines and presents to Silas', cx, H * 0.12, C.accent, 15); if (t === 400) sendPacket('proctor', 'silas', '"All done ✓"', C.proctor, 0.015); }
     }
   },
@@ -217,9 +217,9 @@ const SCENES = [
       if (t < 80) { drawCaption('When Silas says "hey team" or "let\'s" or "we need"...', cx, H * 0.12, C.silas, 16); if (t > 20) drawSpeechBubble(teammates.silas.x + 70, teammates.silas.y - 40, '"Hey team, we need to..."', C.silas, Math.min((t-20)/20, 1)); }
       if (t > 80 && t < 160) { drawCaption('Proctor goes into FULL COORDINATION MODE', cx, H * 0.12, C.proctor, 16); highlight('proctor'); addPulse('proctor', C.proctor); if (t === 85) pulseRings.push({ x: teammates.proctor.x, y: teammates.proctor.y, r: 20, maxR: 200, color: C.proctor, alpha: 0.4 }); }
       if (t > 140 && t < 220) { drawCaption('First: Is Brother running? If not → Proctor cold-starts him via PowerShell', cx, H * 0.12, C.brother, 14); if (t > 160 && t < 200) drawCallout(teammates.brother.x, teammates.brother.y - 65, 'Start-Process WindowsTerminal → claude-auto.cmd', C.brother); if (t === 170) { sendPacket('proctor', 'brother', 'COLD START', C.wmcp, 0.015); addPulse('brother', C.brother); highlight('brother'); } }
-      if (t > 220 && t < 350) { drawCaption('Then Proctor distributes tasks across the WHOLE team simultaneously', cx, H * 0.12, C.accent, 15); highlight('brother'); highlight('stepbro'); highlight('sister'); if (t === 240) { sendPacket('proctor', 'brother', 'DB + WEB TASKS', C.brother, 0.01); sendPacket('proctor', 'sister', 'DOC TASKS', C.sister, 0.011); sendPacket('proctor', 'stepbro', 'CODE TASKS', C.stepbro, 0.012); } }
+      if (t > 220 && t < 350) { drawCaption('Then Proctor distributes tasks across the WHOLE team simultaneously', cx, H * 0.12, C.accent, 15); highlight('brother'); highlight('sister'); highlight('council'); if (t === 240) { sendPacket('proctor', 'brother', 'DB + WEB TASKS', C.brother, 0.01); sendPacket('proctor', 'sister', 'QUALIFICATION', C.sister, 0.011); sendPacket('proctor', 'council', 'AUTO TASKS', C.council, 0.012); } }
       if (t > 300 && t < 420) { Object.keys(teammates).forEach(id => { if (id !== 'silas') drawWorkingIndicator(teammates[id], t); }); drawCaption('Everyone works in parallel — Proctor monitors ALL of them', cx, H * 0.12, C.text, 15); }
-      if (t > 400) { drawCaption('Results converge back through Proctor → synthesized for Silas', cx, H * 0.12, C.archive, 15); if (t === 410) { sendPacket('brother', 'proctor', '✓', C.brother, 0.012); sendPacket('sister', 'proctor', '✓', C.sister, 0.013); sendPacket('stepbro', 'proctor', '✓', C.stepbro, 0.014); } if (t === 460) sendPacket('proctor', 'silas', 'ALL COMPLETE ✓', C.proctor, 0.015); }
+      if (t > 400) { drawCaption('Results converge back through Proctor → synthesized for Silas', cx, H * 0.12, C.archive, 15); if (t === 410) { sendPacket('brother', 'proctor', '✓', C.brother, 0.012); sendPacket('sister', 'proctor', '✓', C.sister, 0.013); sendPacket('council', 'proctor', '✓', C.council, 0.014); } if (t === 460) sendPacket('proctor', 'silas', 'ALL COMPLETE ✓', C.proctor, 0.015); }
     }
   },
   {
@@ -228,7 +228,7 @@ const SCENES = [
     run(t) {
       drawAllTeammates();
       if (t < 80) drawCaption('How do they actually TALK to each other?', cx, H * 0.12, C.text, 18);
-      if (t > 60 && t < 180) { drawCaption('Windows-MCP — the NON-NEGOTIABLE bridge that connects everything', cx, H * 0.12, C.wmcp, 16); ['brother', 'stepbro', 'sister'].forEach((id, i) => { if (t > 80 + i * 20) drawBridge(teammates.proctor, teammates[id], 'Windows-MCP', C.wmcp, Math.min((t - 80 - i*20)/30, 1)); }); }
+      if (t > 60 && t < 180) { drawCaption('Windows-MCP — the NON-NEGOTIABLE bridge that connects everything', cx, H * 0.12, C.wmcp, 16); ['brother', 'sister', 'council'].forEach((id, i) => { if (t > 80 + i * 20) drawBridge(teammates.proctor, teammates[id], 'Windows-MCP', C.wmcp, Math.min((t - 80 - i*20)/30, 1)); }); }
       if (t > 180 && t < 260) { drawCaption("Proctor TYPES into Brother's terminal — like a human would, but automated", cx, H * 0.12, C.brother, 15); drawTypingAnimation(teammates.proctor, teammates.brother, t - 180); if (t % 15 === 0) sendPacket('proctor', 'brother', '⌨️', C.wmcp, 0.02); }
       if (t > 260 && t < 340) { drawCaption('It can also take snapshots, click buttons, read screens — full desktop control', cx, H * 0.12, C.accent, 15); ['Type Commands', 'Read Output', 'Take Snapshots', 'Launch Apps', 'Monitor Status'].forEach((cap, i) => { if (t > 270 + i * 12) { ctx.globalAlpha = Math.min((t - 270 - i*12)/15, 1); ctx.font = '12px system-ui'; ctx.fillStyle = C.wmcp; ctx.textAlign = 'center'; ctx.fillText('● ' + cap, cx, H * 0.22 + i * 20); ctx.globalAlpha = 1; } }); }
       if (t > 340) { drawCaption('First thing EVERY session: Proctor verifies Windows-MCP is connected', cx, H * 0.12, '#ef4444', 15); drawCallout(teammates.proctor.x, teammates.proctor.y - 75, 'If missing → ALERT Silas immediately', '#ef4444'); }
@@ -242,7 +242,7 @@ const SCENES = [
       const archiveX = cx, archiveY = cy + 10;
       if (t > 20) { ctx.globalAlpha = Math.min((t - 20) / 30, 1); drawArchiveIcon(archiveX, archiveY - 130, Math.min((t-20)/30,1)); ctx.globalAlpha = 1; }
       if (t < 80) drawCaption("How does everyone know what's going on? THE ARCHIVE SYSTEM", cx, H * 0.1, C.archive, 16);
-      if (t > 80 && t < 180) { drawCaption("claude-archive.md — the team's shared long-term memory", cx, H * 0.1, C.archive, 15); ['proctor', 'brother', 'stepbro', 'sister'].forEach((id, i) => { if (t > 90 + i * 15) drawDashedLine({x: archiveX, y: archiveY - 130}, teammates[id], C.archive, Math.min((t-90-i*15)/20, 0.4)); }); }
+      if (t > 80 && t < 180) { drawCaption("claude-archive.md — the team's shared long-term memory", cx, H * 0.1, C.archive, 15); ['proctor', 'brother', 'sister', 'council'].forEach((id, i) => { if (t > 90 + i * 15) drawDashedLine({x: archiveX, y: archiveY - 130}, teammates[id], C.archive, Math.min((t-90-i*15)/20, 0.4)); }); }
       if (t > 180 && t < 280) { drawCaption('Proctor MUST update it at 50% context AND end of every chat', cx, H * 0.1, C.proctor, 15); highlight('proctor'); if (t === 200) sendPacket('proctor', 'proctor', 'ARCHIVE UPDATE', C.archive, 0.008); [{ name: 'claude-archive.md', desc: 'Long-term memory', y: 0 }, { name: 'session-state.md', desc: 'Current session', y: 24 }, { name: 'briefing-proctor.md', desc: 'Startup briefing', y: 48 }].forEach((f, i) => { if (t > 200 + i * 20) { ctx.globalAlpha = Math.min((t - 200 - i*20)/15, 1); ctx.font = 'bold 11px Consolas, monospace'; ctx.fillStyle = C.archive; ctx.textAlign = 'center'; ctx.fillText(f.name, cx, cy - 60 + f.y); ctx.font = '10px system-ui'; ctx.fillStyle = C.dim; ctx.fillText(f.desc, cx, cy - 47 + f.y); ctx.globalAlpha = 1; } }); }
       if (t > 280 && t < 380) { drawCaption('This is how a new session picks up where the last one left off', cx, H * 0.1, C.accent, 15); drawCaption('Every teammate reads these files → instant context', cx, H * 0.1 + 24, C.dim, 13); }
       if (t > 380) { drawCaption('At 80% context usage → Proctor alerts Silas to wrap up or start fresh', cx, H * 0.1, '#ef4444', 15); drawContextMeter(cx, cy - 80, 0.82, t - 380); }
@@ -276,13 +276,13 @@ const SCENES = [
     setup() { unhighlightAll(); Object.keys(teammates).forEach(id => highlight(id)); },
     run(t) {
       drawAllTeammates();
-      [['proctor','brother'],['proctor','sister'],['proctor','stepbro'],['silas','proctor']].forEach(([a,b]) => drawDashedLine(teammates[a], teammates[b], C.wmcp, 0.25));
+      [['proctor','brother'],['proctor','sister'],['proctor','council'],['silas','proctor']].forEach(([a,b]) => drawDashedLine(teammates[a], teammates[b], C.wmcp, 0.25));
       if (t < 100) drawCaption('THE COMPLETE SYSTEM', cx, H * 0.08, C.text, 22);
-      if (t > 50 && t % 30 === 0) { const targets = ['brother','sister','stepbro']; sendPacket('proctor', targets[Math.floor(Math.random()*targets.length)], '', C.proctor, 0.01); }
-      if (t > 50 && t % 45 === 0) { const sources = ['brother','sister','stepbro']; const s = sources[Math.floor(Math.random()*sources.length)]; sendPacket(s, 'proctor', '', teammates[s].color, 0.01); }
+      if (t > 50 && t % 30 === 0) { const targets = ['brother','sister','council']; sendPacket('proctor', targets[Math.floor(Math.random()*targets.length)], '', C.proctor, 0.01); }
+      if (t > 50 && t % 45 === 0) { const sources = ['brother','sister','council']; const s = sources[Math.floor(Math.random()*sources.length)]; sendPacket(s, 'proctor', '', teammates[s].color, 0.01); }
       if (t > 50 && t % 60 === 0) sendPacket('silas', 'proctor', '', C.silas, 0.012);
       if (t > 50 && t % 70 === 0) sendPacket('proctor', 'silas', '', C.proctor, 0.012);
-      [{ t: 80, id: 'silas', text: 'Gives tasks, receives results' }, { t: 120, id: 'proctor', text: 'Routes, monitors, archives' }, { t: 160, id: 'brother', text: 'Code, DB, infra + Playwright MCP' }, { t: 200, id: 'stepbro', text: 'Quick code in Desktop' }, { t: 240, id: 'sister', text: 'Docs, files, batch work' }].forEach(s => { if (t > s.t) { ctx.globalAlpha = Math.min((t - s.t) / 20, 1); drawCallout(teammates[s.id].x, teammates[s.id].y + 55, s.text, teammates[s.id].color); ctx.globalAlpha = 1; } });
+      [{ t: 80, id: 'silas', text: 'Gives tasks, receives results' }, { t: 120, id: 'proctor', text: 'Routes, monitors, archives' }, { t: 160, id: 'brother', text: 'Code, DB, infra + Playwright MCP' }, { t: 200, id: 'sister', text: 'Real-time qualification via RC' }, { t: 240, id: 'council', text: 'n8n automation + scheduled tasks' }].forEach(s => { if (t > s.t) { ctx.globalAlpha = Math.min((t - s.t) / 20, 1); drawCallout(teammates[s.id].x, teammates[s.id].y + 55, s.text, teammates[s.id].color); ctx.globalAlpha = 1; } });
       if (t > 380) {
         ctx.globalAlpha = Math.min((t - 380) / 30, 1);
         ctx.fillStyle = C.panel + 'cc'; ctx.beginPath(); ctx.roundRect(cx - 200, H * 0.86, 400, 56, 10); ctx.fill();
@@ -368,13 +368,13 @@ function drawBrowserWindow(x, y, t) {
 }
 function drawDesktopGroup(t) {
   const a = Math.min(t / 20, 0.6); ctx.globalAlpha = a;
-  const pts = [teammates.proctor, teammates.sister, teammates.stepbro];
+  const pts = [teammates.proctor, teammates.brother, teammates.council];
   const minX = Math.min(...pts.map(p=>p.x)) - 60, maxX = Math.max(...pts.map(p=>p.x)) + 60;
   const minY = Math.min(...pts.map(p=>p.y)) - 55, maxY = Math.max(...pts.map(p=>p.y)) + 55;
   ctx.strokeStyle = C.dim; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
   ctx.beginPath(); ctx.roundRect(minX, minY, maxX-minX, maxY-minY, 12); ctx.stroke(); ctx.setLineDash([]);
   ctx.font = '10px system-ui'; ctx.fillStyle = C.dim; ctx.textAlign = 'center';
-  ctx.fillText('Same Claude Desktop Window', (minX+maxX)/2, maxY + 14); ctx.globalAlpha = 1;
+  ctx.fillText('Tandem Team System', (minX+maxX)/2, maxY + 14); ctx.globalAlpha = 1;
 }
 function drawArchiveIcon(x, y, alpha) {
   ctx.globalAlpha = alpha; ctx.fillStyle = C.archive + '20'; ctx.beginPath(); ctx.roundRect(x-35, y-20, 70, 40, 8); ctx.fill();
@@ -403,8 +403,8 @@ function resize() {
   teammates.silas.x = cx; teammates.silas.y = cy - r * 0.85;
   teammates.proctor.x = cx; teammates.proctor.y = cy;
   teammates.brother.x = cx - r * 0.95; teammates.brother.y = cy + r * 0.6;
-  teammates.stepbro.x = cx + r * 0.95; teammates.stepbro.y = cy + r * 0.6;
-  teammates.sister.x = cx - r * 0.95; teammates.sister.y = cy - r * 0.3;
+  teammates.sister.x = cx + r * 0.95; teammates.sister.y = cy + r * 0.6;
+  teammates.council.x = cx + r * 0.95; teammates.council.y = cy - r * 0.3;
 }
 
 function loop() {
