@@ -183,9 +183,19 @@
 
   @media (max-width: 960px) { .g3, .g4 { grid-template-columns: repeat(2, 1fr); } .teams-flow { flex-wrap: wrap; } .team-arrow { display: none; } .gsd-flow, .profile-grid { grid-template-columns: repeat(3, 1fr); } .progress-grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 560px) { .g2, .g3, .g4 { grid-template-columns: 1fr; } .page { padding: 24px 16px; } .gsd-flow, .profile-grid { grid-template-columns: 1fr 1fr; } .progress-grid { grid-template-columns: 1fr; } .progress-stats { flex-wrap: wrap; gap: 16px; } }
+  .back-nav { position: fixed; top: 16px; left: 20px; z-index: 200; }
+  .back-nav a {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border-radius: 8px; border: 1px solid #334155;
+    background: #1e293bcc; color: #94a3b8; text-decoration: none;
+    font-size: 13px; font-weight: 500; backdrop-filter: blur(8px);
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .back-nav a:hover { border-color: #60a5fa; color: #e2e8f0; }
 </style>
 </head>
 <body>
+<div class="back-nav"><a href="index.html">&larr; Amerix Home</a></div>
 <div class="page">
 
   <div class="header">
