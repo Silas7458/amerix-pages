@@ -200,7 +200,7 @@
 
   <div class="header">
     <h1>🏗️ Amerix Development Toolkit</h1>
-    <div class="sub">v13 · Last updated: March 1, 2026 · Team simplified to 4 members: Proctor + Brother + Sister 2.0 (RC Window) + Council Engine. Step Brother removed.</div>
+    <div class="sub">v14 · Last updated: March 1, 2026 · 9 MCP servers · 17 custom agents · 8 hooks · ccusage cost tracking · Context7 + GitHub MCP added</div>
   </div>
 
   <div class="hub">
@@ -223,7 +223,7 @@
       <div class="team-arrow">→</div>
       <div class="team-node proctor"><div class="tn-icon">🎛️</div><div class="tn-name">Proctor</div><div class="tn-role">Mission Control</div><div class="tn-desc">Claude Desktop (Chat). Types into Brother's terminal via Windows-MCP. Plans strategy, relays tasks, monitors via Shell + Clipboard grab. Reads morning briefs on startup.</div></div>
       <div class="team-arrow">↔</div>
-      <div class="team-node"><div class="tn-icon">⚡</div><div class="tn-name">Brother</div><div class="tn-role">Chief Engineer (CLI)</div><div class="tn-desc">Claude Code terminal. 9 plugins active, 6 MCP servers (incl. Discord + Google Drive). Writes code, builds servers, runs tests. Agent-first protocol. The muscle.</div></div>
+      <div class="team-node"><div class="tn-icon">⚡</div><div class="tn-name">Brother</div><div class="tn-role">Chief Engineer (CLI)</div><div class="tn-desc">Claude Code terminal. 9 plugins active, 9 MCP servers (incl. Discord, Google Drive, Context7, GitHub). 17 custom agents. 8 hooks. Writes code, builds servers, runs tests. Agent-first protocol. The muscle.</div></div>
       <div class="team-arrow">↔</div>
       <div class="team-node"><div class="tn-icon">🪞</div><div class="tn-name">Sister 2.0</div><div class="tn-role">RC Window</div><div class="tn-desc">Claude Code Remote Control. Real-time Qualification Layer — same brain as Brother. NOT a separate agent. Silas connects via claude.ai/code to Brother's active session.</div></div>
       <div class="team-arrow">↔</div>
@@ -319,10 +319,10 @@
     <div class="sec-badge">📊 Status Report</div>
     <div class="sec-title">Build Progress — Infrastructure + Council Engine</div>
     <div class="sec-analogy">⟶ Foundation Poured, Engine Running, Discord Comms Live, Drive Connected, Public Repo Shipped</div>
-    <div class="sec-desc">Twenty-five days of infrastructure work (Feb 5 – Mar 1) have connected all systems, established the 4-member Tandem Team (Proctor + Brother + Sister 2.0 RC + Council Engine) with Discord as primary comms, built 19 n8n workflows across 14 PostgreSQL tables, shipped Context Authority Phase 1, launched video analysis pipelines, added Discord MCP + Google Drive MCP, published silas-ai-toolkit to GitHub, and integrated RLM for large document processing. The platform is autonomous — Council Engine deliberates without sessions, morning briefs generate without agents, deliverables coordinate through a shared folder + Discord notifications.</div>
+    <div class="sec-desc">Twenty-five days of infrastructure work (Feb 5 – Mar 1) have connected all systems, established the 4-member Tandem Team (Proctor + Brother + Sister 2.0 RC + Council Engine) with Discord as primary comms, built 19 n8n workflows across 14 PostgreSQL tables, shipped Context Authority Phase 1, launched video analysis pipelines, added Discord MCP + Google Drive MCP + Context7 + GitHub MCP, published silas-ai-toolkit to GitHub, built 17 custom agent prompts, wired 8 hooks, and integrated ccusage cost tracking. The platform is autonomous — Council Engine deliberates without sessions, morning briefs generate without agents, deliverables coordinate through a shared folder + Discord notifications.</div>
 
     <div class="progress-stats">
-      <div class="stat-box"><div class="stat-num green">26</div><div class="stat-label">Systems Online</div></div>
+      <div class="stat-box"><div class="stat-num green">31</div><div class="stat-label">Systems Online</div></div>
       <div class="stat-box"><div class="stat-num amber">3</div><div class="stat-label">Partial / Pending</div></div>
       <div class="stat-box"><div class="stat-num dim">8</div><div class="stat-label">Planned (SaaS Phase)</div></div>
     </div>
@@ -404,7 +404,7 @@
         <div class="pi-icon">📊</div>
         <div class="pi-name">Tool Stack Optimization</div>
         <div class="pi-status">✅ Lean & Documented</div>
-        <div class="pi-desc">MCP servers: 7→3 active. Plugins: 14→9 active. tool-library.md catalogs all disabled tools. ENABLE_TOOL_SEARCH defers loading in Claude Code. Profile switcher operational.</div>
+        <div class="pi-desc">MCP servers: 9 active (was 7→3, now expanded with Context7, GitHub, ccusage). Plugins: 14→9 active. 17 custom agents. 8 hooks. tool-library.md catalogs all disabled tools. ENABLE_TOOL_SEARCH defers loading in Claude Code.</div>
         <div class="pi-date">Feb 13–16 · Eisenhower Matrix applied to tool decisions</div>
       </div>
 
@@ -513,7 +513,7 @@
 
       <div class="card c-cyan"><span class="newbadge">UPDATED v13</span><div class="card-head"><div class="icon-box">🎛️</div><div><h3>Proctor (Strategic Coordinator)</h3><div class="card-type">claude desktop chat + windows-MCP</div></div></div><div class="analogy">Your Mission Control Room</div><div class="desc">Claude Desktop Chat tab. Types directly into Brother's terminal via Windows-MCP. Reads auto-generated briefings on startup. Coordinates the Tandem Family Team. Switches between tool profiles. Uses launcher wrapper for reliable Windows-MCP startup.</div><div class="tags"><span class="tag">windows-MCP ★</span><span class="tag">5 profiles</span><span class="tag">tandem lead</span><span class="tag">cold-start</span><span class="tag">briefings</span></div></div>
 
-      <div class="card c-amber"><span class="newbadge">UPDATED v13</span><div class="card-head"><div class="icon-box">⚡</div><div><h3>Brother (Chief Engineer)</h3><div class="card-type">terminal agent + 9 plugins + 6 MCP servers</div></div></div><div class="analogy">Your Construction Foreman</div><div class="desc">Runs in Claude Code terminal. 9 active plugins, 6 MCP servers (Docker, Playwright, n8n, Discord, Google Drive, Windows). Built Council Engine (19 workflows), Context Authority, video analysis pipelines. Agent Teams + GSD enabled. Agent-first protocol. Sister 2.0 (RC Window) connects to this session.</div><div class="tags"><span class="tag">9 plugins</span><span class="tag">6 MCP servers</span><span class="tag">agent teams ✅</span><span class="tag">GSD ✅</span><span class="tag">Discord MCP</span><span class="tag">Google Drive MCP</span></div></div>
+      <div class="card c-amber"><span class="newbadge">UPDATED v13</span><div class="card-head"><div class="icon-box">⚡</div><div><h3>Brother (Chief Engineer)</h3><div class="card-type">terminal agent + 9 plugins + 9 MCP servers</div></div></div><div class="analogy">Your Construction Foreman</div><div class="desc">Runs in Claude Code terminal. 9 active plugins, 9 MCP servers (Docker, Playwright, n8n, Discord, Google Drive, Windows, Context7, GitHub, ccusage). 17 custom agents, 8 hooks. Built Council Engine (19 workflows), Context Authority, video analysis pipelines. Agent Teams + GSD enabled. Agent-first protocol. Sister 2.0 (RC Window) connects to this session.</div><div class="tags"><span class="tag">9 plugins</span><span class="tag">9 MCP servers</span><span class="tag">17 agents</span><span class="tag">8 hooks</span><span class="tag">agent teams ✅</span><span class="tag">GSD ✅</span><span class="tag">Context7</span><span class="tag">GitHub MCP</span></div></div>
 
       <div class="card c-green"><span class="newbadge">NEW v13</span><div class="card-head"><div class="icon-box">🪞</div><div><h3>Sister 2.0 (RC Window)</h3><div class="card-type">claude code remote control</div></div></div><div class="analogy">Your Real-Time Qualification Layer</div><div class="desc">Claude Code Remote Control. Same brain as Brother — NOT a separate agent. Silas connects via claude.ai/code to Brother's active terminal session. One question at a time, [RC] prefix for directives. Zero extra token budget. Replaces Step Brother.</div><div class="tags"><span class="tag">RC window</span><span class="tag">qualification</span><span class="tag">same brain</span><span class="tag">real-time</span></div></div>
 
@@ -592,6 +592,48 @@
     </div>
   </div>
 
+  <div class="flow"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>custom agents + hooks + tooling<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div>
+
+  <!-- ============ CUSTOM AGENTS ============ -->
+  <div class="special-section ss-cyan">
+    <div class="sec-badge">🤖 New v14</div>
+    <div class="sec-title">Custom Tandem Agents — 17 Specialized Workers</div>
+    <div class="sec-analogy">⟶ Your On-Demand Specialist Team, Hired by Keyword</div>
+    <div class="sec-desc">17 custom agent prompt templates stored in <code>claude-family/agent-prompts/</code> (and synced to <code>silas-ai-toolkit/claude-code-toolkit/agent-prompts/</code>). Brother spawns them via the Agent tool for delegated work — each agent has a focused system prompt, knows Amerix conventions, and returns structured output. 5 new Tandem agents added March 2026 to cover research, document building, deployment, QA, and strategic oversight.</div>
+
+    <div class="grid g5">
+      <div class="card c-cyan"><span class="newbadge">NEW v14</span><div class="card-head"><div class="icon-box">🔍</div><div><h3>tandem-researcher</h3><div class="card-type">custom agent</div></div></div><div class="desc">Multi-source web research with source tiering and cross-validation. Produces structured findings with confidence ratings.</div><div class="tags"><span class="tag">research</span><span class="tag">cross-validate</span><span class="tag">source tiering</span></div></div>
+
+      <div class="card c-cyan"><span class="newbadge">NEW v14</span><div class="card-head"><div class="icon-box">📄</div><div><h3>tandem-doc-builder</h3><div class="card-type">custom agent</div></div></div><div class="desc">.docx/.xlsx creation with Amerix branding standards. Handles formatting, templates, and compliance document generation.</div><div class="tags"><span class="tag">.docx</span><span class="tag">.xlsx</span><span class="tag">Amerix branding</span></div></div>
+
+      <div class="card c-cyan"><span class="newbadge">NEW v14</span><div class="card-head"><div class="icon-box">🚀</div><div><h3>tandem-deployer</h3><div class="card-type">custom agent</div></div></div><div class="desc">Vercel deploy + verify cycle. Knows project structure, runs force deploys, tests endpoints, confirms live output before reporting done.</div><div class="tags"><span class="tag">Vercel</span><span class="tag">deploy</span><span class="tag">verify</span></div></div>
+
+      <div class="card c-cyan"><span class="newbadge">NEW v14</span><div class="card-head"><div class="icon-box">✅</div><div><h3>tandem-qa</h3><div class="card-type">custom agent</div></div></div><div class="desc">Final quality gate before delivery. Checklist-driven verification — checks completeness, accuracy, formatting, and compliance before any deliverable ships.</div><div class="tags"><span class="tag">quality gate</span><span class="tag">checklist</span><span class="tag">pre-delivery</span></div></div>
+
+      <div class="card c-cyan"><span class="newbadge">NEW v14</span><div class="card-head"><div class="icon-box">🎯</div><div><h3>tandem-strategist</h3><div class="card-type">custom agent</div></div></div><div class="desc">30,000-foot "Why" agent. Watches for priority drift, enforces Eisenhower Matrix, ensures tactical work aligns with strategic goals.</div><div class="tags"><span class="tag">strategy</span><span class="tag">Eisenhower</span><span class="tag">priority drift</span></div></div>
+    </div>
+
+    <div class="info-boxes">
+      <div class="info-box ib-cyan"><h4>📊 Agent Census</h4><p>17 total custom agents (up from 12). 10 base agent templates + 5 new Tandem specialists + 2 legacy. All indexed in agent-prompts/INDEX.md with chaining patterns.</p></div>
+      <div class="info-box ib-cyan"><h4>⚡ Agent-First Protocol</h4><p>Brother delegates all tasks >500 tokens of raw output to agents. 30s startup cost is almost always worth the context savings. Parallel agent launches for independent research tracks.</p></div>
+    </div>
+  </div>
+
+  <!-- ============ HOOKS ============ -->
+  <div class="tier">
+    <div class="tier-head"><span class="tier-label">Hooks — 8 Active Event Triggers</span><span class="tier-line"></span></div>
+    <div class="tier-desc">Claude Code hooks fire automatically on specific events. 8 active hooks handle memory, formatting, and notifications without manual intervention.</div>
+    <div class="grid g4">
+      <div class="card c-green"><div class="card-head"><div class="icon-box">🧠</div><div><h3>Memory Hooks (3)</h3><div class="card-type">PreToolUse + PostToolUse</div></div></div><div class="desc">CC-v3 memory system hooks — auto-extract lessons, track knowledge writes, and wire /recall + /remember commands into the session lifecycle.</div><div class="tags"><span class="tag">memory</span><span class="tag">CC-v3</span><span class="tag">auto-extract</span></div></div>
+
+      <div class="card c-green"><div class="card-head"><div class="icon-box">🔔</div><div><h3>Notification Hook (1)</h3><div class="card-type">notification queue check</div></div></div><div class="desc">Checks brother-queue.md on every response cycle. Surfaces pending notifications from teammates or Council Engine before proceeding with work.</div><div class="tags"><span class="tag">notifications</span><span class="tag">queue check</span><span class="tag">auto-surface</span></div></div>
+
+      <div class="card c-green"><span class="newbadge">NEW v14</span><div class="card-head"><div class="icon-box">🖥️</div><div><h3>Desktop Notification</h3><div class="card-type">Stop event hook</div></div></div><div class="desc">Windows toast notification when Claude Code needs human input. Fires on Stop event — no more missed prompts while multitasking. Uses PowerShell BurntToast module.</div><div class="tags"><span class="tag">toast</span><span class="tag">Stop event</span><span class="tag">BurntToast</span></div></div>
+
+      <div class="card c-green"><span class="newbadge">NEW v14</span><div class="card-head"><div class="icon-box">✨</div><div><h3>Auto-Format</h3><div class="card-type">PostToolUse — Write events</div></div></div><div class="desc">Runs Prettier automatically on code files after Write tool use. Consistent formatting without manual intervention. Targets JS, TS, JSON, HTML, CSS files.</div><div class="tags"><span class="tag">Prettier</span><span class="tag">PostToolUse</span><span class="tag">auto-format</span></div></div>
+    </div>
+  </div>
+
   <div class="flow"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>community power-ups for claude code<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div>
 
   <!-- ============ RESOURCE REPOS ============ -->
@@ -620,7 +662,7 @@
   <!-- ============ TIER 2: PROCTOR MCP EXTENSIONS ============ -->
   <div class="tier">
     <div class="tier-head"><span class="tier-label">Tier 2 — The Proctor's Arsenal (Active MCP + Disabled Library)</span><span class="tier-line"></span></div>
-    <div class="tier-desc">6 active MCP servers (Windows, Docker Gateway, n8n, Playwright, Discord, Google Drive). Disabled tools cataloged in tool-library.md. Windows-MCP is non-negotiable.</div>
+    <div class="tier-desc">9 active MCP servers (Windows, Docker Gateway, n8n, Playwright, Discord, Google Drive, Context7, GitHub, ccusage). Disabled tools cataloged in tool-library.md. Windows-MCP is non-negotiable.</div>
     <div class="grid g3">
       <div class="card c-blue"><div class="card-head"><div class="icon-box">🖥️</div><div><h3>Windows MCP ★</h3><div class="card-type">MCP — 11 tools — MANDATORY</div></div></div><div class="analogy">Proctor's Eyes & Hands</div><div class="desc">MANDATORY in every profile. Uses launcher wrapper (windows-mcp-launcher.cmd) that cleans comtypes cache before startup. Screenshot, click, type, PowerShell, app launch. Required for all cross-window coordination.</div><div class="tags"><span class="tag">MANDATORY ★</span><span class="tag">launcher wrapper</span><span class="tag">click</span><span class="tag">type</span><span class="tag">powershell</span></div></div>
 
@@ -635,6 +677,12 @@
       <div class="card c-blue"><span class="newbadge">NEW v12</span><div class="card-head"><div class="icon-box">💬</div><div><h3>Discord MCP</h3><div class="card-type">MCP — team communication — ACTIVE</div></div></div><div class="analogy">Your Team Radio Channel</div><div class="desc">Team communication backbone. Bot-driven async messaging across #handoffs, session logs, and alerts. Replaces file-based inboxes as primary comms channel. All agents post through Tandem Bot.</div><div class="tags"><span class="tag">ACTIVE ✅</span><span class="tag">#handoffs</span><span class="tag">async comms</span><span class="tag">Tandem Bot</span></div></div>
 
       <div class="card c-blue"><span class="newbadge">NEW v12</span><div class="card-head"><div class="icon-box">📁</div><div><h3>Google Drive MCP</h3><div class="card-type">MCP — file management — ACTIVE</div></div></div><div class="analogy">Your Cloud Filing Cabinet</div><div class="desc">Read, write, search, and manage Google Drive files. OAuth via executive.shelton@gmail.com. Supports Sheets, Docs, Slides, and file uploads. Powers Cloud Archive Sync and deliverable sharing.</div><div class="tags"><span class="tag">ACTIVE ✅</span><span class="tag">OAuth</span><span class="tag">Sheets</span><span class="tag">Docs</span><span class="tag">Slides</span></div></div>
+
+      <div class="card c-blue"><span class="newbadge">NEW v14</span><div class="card-head"><div class="icon-box">📚</div><div><h3>Context7 MCP</h3><div class="card-type">MCP — live documentation — ACTIVE</div></div></div><div class="analogy">Your Library That Never Goes Stale</div><div class="desc">Live, up-to-date documentation for any library or framework. No more hallucinated APIs or outdated docs. Resolves library names to Context7-compatible IDs and pulls current documentation on demand.</div><div class="tags"><span class="tag">ACTIVE ✅</span><span class="tag">live docs</span><span class="tag">any library</span><span class="tag">resolve-id</span><span class="tag">get-docs</span></div></div>
+
+      <div class="card c-blue"><span class="newbadge">NEW v14</span><div class="card-head"><div class="icon-box">🐙</div><div><h3>GitHub MCP</h3><div class="card-type">MCP — native PR/issue tools — ACTIVE</div></div></div><div class="analogy">Your GitHub Command Center</div><div class="desc">Native GitHub integration with PR creation, issue management, code review, and repository operations. Uses GITHUB_PERSONAL_ACCESS_TOKEN. Goes beyond gh CLI with structured MCP tool interface.</div><div class="tags"><span class="tag">ACTIVE ✅</span><span class="tag">PRs</span><span class="tag">issues</span><span class="tag">code review</span><span class="tag">native MCP</span></div></div>
+
+      <div class="card c-blue"><span class="newbadge">NEW v14</span><div class="card-head"><div class="icon-box">💰</div><div><h3>ccusage</h3><div class="card-type">CLI tool — cost tracking — ACTIVE</div></div></div><div class="analogy">Your Spending Dashboard</div><div class="desc">Tracks Claude API and Claude Code usage costs. Total spend visibility: $622.31 over Feb 5 – Mar 1 (~$25/day avg). Run anytime for updated breakdown by model, session, and time period.</div><div class="tags"><span class="tag">ACTIVE ✅</span><span class="tag">cost tracking</span><span class="tag">$25/day avg</span><span class="tag">CLI</span></div></div>
 
       <div class="card c-blue" style="opacity:0.5"><span class="disabledbadge">IN LIBRARY</span><div class="card-head"><div class="icon-box">🚂</div><div><h3>Railway MCP</h3><div class="card-type">cloud hosting — DISABLED</div></div></div><div class="analogy">Dormant Launchpad</div><div class="desc">Deploy, manage environments, check logs. Disabled — not needed until SaaS development begins. Re-enable instructions in tool-library.md.</div><div class="tags"><span class="tag">DISABLED</span><span class="tag">dormant</span><span class="tag">SaaS phase</span></div></div>
     </div>
@@ -707,8 +755,17 @@
     <div class="sec-title">Version History</div>
 
     <div style="margin-bottom: 24px;">
-      <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--cyan); font-weight: 600; margin-bottom: 8px;">v13 — March 1, 2026</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--cyan); font-weight: 600; margin-bottom: 8px;">v14 — March 1, 2026</div>
       <div style="font-size: 12.5px; color: #7e84aa; line-height: 1.8; padding-left: 16px; border-left: 2px solid rgba(34,211,238,0.2);">
+        <strong style="color: var(--green);">Added:</strong> Context7 MCP (live docs for any library) · GitHub MCP (native PR/issue tools with token) · ccusage CLI (cost tracking — $622.31 total, ~$25/day avg) · 5 new custom Tandem agents: tandem-researcher (multi-source research), tandem-doc-builder (.docx/.xlsx with Amerix branding), tandem-deployer (Vercel deploy+verify), tandem-qa (quality gate), tandem-strategist (priority drift watcher) · Desktop notification hook (Stop event — Windows toast via BurntToast) · Auto-format hook (PostToolUse/Write — Prettier on code files) · Custom Agents section with all 17 agents visualized · Hooks section with all 8 hooks visualized<br>
+        <strong style="color: var(--cyan);">Changed:</strong> MCP server count: 6 → 9 active · Custom agent count: 12 → 17 · Hook count: 6 → 8 · Systems online: 26 → 31 · Brother card updated with new counts · Tier 2 description updated · Tool Stack Optimization milestone updated · Build Progress summary expanded<br>
+        <strong style="color: var(--text-muted);">Removed:</strong> (none)
+      </div>
+    </div>
+
+    <div style="margin-bottom: 24px;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-dim); font-weight: 600; margin-bottom: 8px;">v13 — March 1, 2026</div>
+      <div style="font-size: 12.5px; color: #5a6088; line-height: 1.8; padding-left: 16px; border-left: 2px solid rgba(90,96,136,0.2);">
         <strong style="color: var(--green);">Added:</strong> Sister 2.0 (RC Window) — Claude Code Remote Control, real-time qualification layer connected to Brother's session. Same brain, two input surfaces.<br>
         <strong style="color: var(--cyan);">Changed:</strong> Tandem Team simplified from 5 historical members → 4 active members (Proctor + Brother + Sister 2.0 + Council Engine) · Team section title and description updated · Tier 1 cards reorganized<br>
         <strong style="color: var(--text-muted);">Removed:</strong> Step Brother (Code tab agent — team simplified, role unnecessary) · Cousin references cleaned up (was already removed in v10)
@@ -765,7 +822,7 @@
   <!-- LEGEND -->
   <div class="legend">
     <div class="legend-item"><div class="dot active"></div>active — installed & configured</div>
-    <div class="legend-item"><div class="dot newdot"></div>new/updated in v13</div>
+    <div class="legend-item"><div class="dot newdot"></div>new/updated in v14</div>
     <div class="legend-item"><div class="dot disabled"></div>disabled — in tool-library.md</div>
     <div class="legend-item"><div class="dot wait"></div>partial — needs work</div>
     <div class="legend-item"><div class="dot eval"></div>evaluate — research & install</div>
