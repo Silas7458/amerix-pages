@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amerix Intelligence Network — Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e17;--surface:#111827;--surface2:#1a2332;--border:#2a3444;
+  --text:#e5e7eb;--text-dim:#9ca3af;--accent:#3b82f6;
+  --red:#ef4444;--amber:#f59e0b;--green:#22c55e;--grey:#6b7280;
+}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+
+/* Header */
+.header{background:linear-gradient(135deg,#111827 0%,#1e293b 100%);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.header h1{font-size:1.4rem;font-weight:700;letter-spacing:.5px}
+.header h1 span{color:var(--accent)}
+.header-meta{font-size:.8rem;color:var(--text-dim)}
+.refresh-badge{font-size:.7rem;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 8px;color:var(--text-dim)}
+
+/* Stats Bar */
+.stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;padding:16px 24px;background:var(--surface)}
+.stat-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px 18px}
+.stat-card .label{font-size:.75rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px}
+.stat-card .value{font-size:1.8rem;font-weight:700;margin-top:2px}
+.stat-card .sub{font-size:.75rem;color:var(--text-dim);margin-top:2px}
+
+/* Layout */
+.main{display:grid;grid-template-columns:1fr 380px;gap:0;min-height:calc(100vh - 160px)}
+@media(max-width:900px){.main{grid-template-columns:1fr}}
+.panel{border-right:1px solid var(--border);overflow:hidden;display:flex;flex-direction:column}
+.sidebar{overflow:hidden;display:flex;flex-direction:column}
+
+/* Section Headers */
+.section-head{padding:12px 20px;background:var(--surface);border-bottom:1px solid var(--border);font-size:.85rem;font-weight:600;display:flex;align-items:center;justify-content:space-between}
+.section-head .count{background:var(--accent);color:#fff;font-size:.7rem;border-radius:10px;padding:1px 8px;font-weight:600}
+
+/* Filters */
+.filters{padding:10px 20px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.filters select,.filters input{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:5px 8px;font-size:.78rem;outline:none}
+.filters select:focus,.filters input:focus{border-color:var(--accent)}
+.filters input[type=range]{width:80px;accent-color:var(--accent)}
+.filters label{font-size:.72rem;color:var(--text-dim)}
+.filter-group{display:flex;align-items:center;gap:4px}
+.btn-sm{background:var(--accent);color:#fff;border:none;border-radius:4px;padding:5px 12px;font-size:.75rem;cursor:pointer}
+.btn-sm:hover{opacity:.85}
+
+/* Article List */
+.article-list{flex:1;overflow-y:auto;padding:0}
+.article-item{padding:12px 20px;border-bottom:1px solid var(--border);transition:background .15s}
+.article-item:hover{background:var(--surface2)}
+.article-title{font-size:.88rem;font-weight:500;margin-bottom:4px;line-height:1.3}
+.article-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.73rem;color:var(--text-dim)}
+.score-badge{display:inline-block;padding:1px 7px;border-radius:3px;font-weight:700;font-size:.72rem;color:#fff}
+.score-high{background:var(--red)}.score-med{background:var(--amber);color:#000}.score-low{background:var(--grey)}
+.tag{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:0 5px;font-size:.68rem;color:var(--text-dim)}
+.source-label{font-weight:600;color:var(--accent)}
+
+/* Convergences */
+.convergence-list{flex:1;overflow-y:auto;padding:0}
+.conv-item{padding:12px 16px;border-bottom:1px solid var(--border)}
+.conv-item:hover{background:var(--surface2)}
+.conv-topic{font-size:.85rem;font-weight:600;color:var(--amber);margin-bottom:4px}
+.conv-sources{font-size:.72rem;color:var(--text-dim);margin-bottom:4px}
+.conv-sources span{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:0 5px;margin-right:4px;display:inline-block;margin-bottom:2px}
+.conv-summary{font-size:.78rem;color:var(--text-dim);line-height:1.4}
+.conv-count{font-size:.7rem;color:var(--text-dim)}
+
+/* Source Breakdown */
+.chart-section{padding:16px;border-bottom:1px solid var(--border)}
+.chart-section h3{font-size:.8rem;font-weight:600;margin-bottom:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.3px}
+.bar-chart .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.bar-row .bar-label{font-size:.72rem;width:70px;text-align:right;color:var(--text-dim);flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-row .bar-track{flex:1;height:16px;background:var(--surface);border-radius:3px;overflow:hidden}
+.bar-row .bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),#60a5fa);transition:width .5s ease}
+.bar-row .bar-val{font-size:.7rem;color:var(--text-dim);width:30px;flex-shrink:0}
+
+/* Score Distribution */
+.score-dist{display:flex;align-items:flex-end;gap:3px;height:60px;padding-top:4px}
+.score-bar{flex:1;background:var(--grey);border-radius:2px 2px 0 0;min-width:8px;transition:height .4s ease;position:relative}
+.score-bar.high{background:var(--red)}.score-bar.med{background:var(--amber)}.score-bar.low{background:var(--grey)}
+.score-labels{display:flex;gap:3px;font-size:.6rem;color:var(--text-dim);margin-top:2px}
+.score-labels span{flex:1;text-align:center}
+
+/* Loading / Empty */
+.loading,.empty{padding:40px;text-align:center;color:var(--text-dim);font-size:.85rem}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Error */
+.error-banner{background:#7f1d1d;color:#fca5a5;padding:8px 20px;font-size:.8rem;display:none}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>Amerix</span> Intelligence Network</h1>
+  <div class="header-meta">
+    <span id="lastUpdate">Loading...</span>
+    <span class="refresh-badge">Auto-refresh: 5 min</span>
+  </div>
+</div>
+
+<div id="errorBanner" class="error-banner"></div>
+
+<div class="stats-bar" id="statsBar">
+  <div class="stat-card"><div class="label">Total Articles</div><div class="value" id="statArticles">--</div></div>
+  <div class="stat-card"><div class="label">Unique Sources</div><div class="value" id="statSources">--</div></div>
+  <div class="stat-card"><div class="label">Avg Relevance</div><div class="value" id="statRelevance">--</div><div class="sub" id="statRelevanceSub"></div></div>
+  <div class="stat-card"><div class="label">Convergence Events</div><div class="value" id="statConvergences">--</div></div>
+</div>
+
+<div class="main">
+  <div class="panel">
+    <div class="section-head">
+      Article Feed <span class="count" id="articleCount">0</span>
+    </div>
+    <div class="filters">
+      <div class="filter-group">
+        <label>Source:</label>
+        <select id="filterSource"><option value="">All</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Min Score:</label>
+        <input type="range" id="filterScore" min="1" max="10" value="1">
+        <span id="scoreVal">1</span>
+      </div>
+      <div class="filter-group">
+        <label>Topic:</label>
+        <input type="text" id="filterTopic" placeholder="Search topics..." style="width:110px">
+      </div>
+      <div class="filter-group">
+        <label>From:</label>
+        <input type="date" id="filterStart">
+      </div>
+      <div class="filter-group">
+        <label>To:</label>
+        <input type="date" id="filterEnd">
+      </div>
+      <button class="btn-sm" onclick="loadArticles()">Apply</button>
+    </div>
+    <div class="article-list" id="articleList">
+      <div class="loading"><div class="spinner"></div><br>Loading articles...</div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="section-head">
+      Convergence Events <span class="count" id="convCount">0</span>
+    </div>
+    <div class="convergence-list" id="convList">
+      <div class="loading"><div class="spinner"></div><br>Loading...</div>
+    </div>
+
+    <div class="chart-section">
+      <h3>Source Breakdown</h3>
+      <div class="bar-chart" id="sourceChart"></div>
+    </div>
+
+    <div class="chart-section">
+      <h3>Score Distribution</h3>
+      <div class="score-dist" id="scoreDist"></div>
+      <div class="score-labels" id="scoreLabels"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_BASE = 'http://localhost:5678/webhook/ain-api';
+let allArticles = [];
+
+function scoreClass(s) { return s >= 8 ? 'high' : s >= 5 ? 'med' : 'low'; }
+function scoreBadgeClass(s) { return s >= 8 ? 'score-high' : s >= 5 ? 'score-med' : 'score-low'; }
+function fmtDate(d) { if (!d) return ''; try { return new Date(d).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'}); } catch(e) { return d; } }
+
+function showError(msg) {
+  const b = document.getElementById('errorBanner');
+  b.textContent = msg; b.style.display = 'block';
+  setTimeout(() => b.style.display = 'none', 10000);
+}
+
+async function apiFetch(path) {
+  try {
+    const r = await fetch(API_BASE + path);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return await r.json();
+  } catch(e) {
+    showError(`API error (${path}): ${e.message}`);
+    return null;
+  }
+}
+
+async function loadStats() {
+  const data = await apiFetch('/stats');
+  if (!data) return;
+  const s = data.stats || data;
+  document.getElementById('statArticles').textContent = (s.totalArticles ?? s.total_articles ?? '--').toLocaleString();
+  document.getElementById('statSources').textContent = s.uniqueSources ?? s.unique_sources ?? '--';
+  const avg = s.avgRelevanceScore ?? s.avgRelevance ?? s.avg_relevance ?? s.averageRelevance;
+  document.getElementById('statRelevance').textContent = avg != null ? Number(avg).toFixed(1) : '--';
+  if (avg != null) {
+    const cls = scoreClass(Number(avg));
+    document.getElementById('statRelevance').style.color = cls === 'high' ? 'var(--red)' : cls === 'med' ? 'var(--amber)' : 'var(--text)';
+  }
+  document.getElementById('statConvergences').textContent = s.convergenceEvents ?? s.convergence_events ?? s.convergences ?? '--';
+
+  // Populate source filter
+  const sources = s.sources || s.sourceList || [];
+  const sel = document.getElementById('filterSource');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">All</option>';
+  (Array.isArray(sources) ? sources : []).forEach(src => {
+    const name = typeof src === 'string' ? src : (src.name || src.source);
+    if (name) { const o = document.createElement('option'); o.value = name; o.textContent = name; sel.appendChild(o); }
+  });
+  sel.value = cur;
+
+  // Source breakdown chart
+  if (s.articlesBySource || s.sourceBreakdown || s.source_breakdown || s.bySource) {
+    renderSourceChart(s.articlesBySource || s.sourceBreakdown || s.source_breakdown || s.bySource);
+  }
+}
+
+async function loadArticles() {
+  const src = document.getElementById('filterSource').value;
+  const minScore = document.getElementById('filterScore').value;
+  const topic = document.getElementById('filterTopic').value;
+  const startDate = document.getElementById('filterStart').value;
+  const endDate = document.getElementById('filterEnd').value;
+
+  let q = `/articles?limit=100&offset=0&minScore=${minScore}`;
+  if (src) q += `&source=${encodeURIComponent(src)}`;
+  if (topic) q += `&topic=${encodeURIComponent(topic)}`;
+  if (startDate) q += `&startDate=${startDate}`;
+  if (endDate) q += `&endDate=${endDate}`;
+
+  document.getElementById('articleList').innerHTML = '<div class="loading"><div class="spinner"></div><br>Loading articles...</div>';
+  const data = await apiFetch(q);
+  if (!data) { document.getElementById('articleList').innerHTML = '<div class="empty">Failed to load articles</div>'; return; }
+
+  allArticles = data.articles || data.data || (Array.isArray(data) ? data : []);
+  document.getElementById('articleCount').textContent = allArticles.length;
+  renderArticles(allArticles);
+  renderScoreDist(allArticles);
+
+  // If stats didn't give source breakdown, build from articles
+  if (!document.getElementById('sourceChart').innerHTML) {
+    const bySource = {};
+    allArticles.forEach(a => { const s = a.source_name || a.source || 'Unknown'; bySource[s] = (bySource[s]||0) + 1; });
+    renderSourceChart(bySource);
+  }
+
+  // Populate source filter if empty
+  const sel = document.getElementById('filterSource');
+  if (sel.options.length <= 1) {
+    const sources = [...new Set(allArticles.map(a => a.source).filter(Boolean))];
+    sources.sort().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; sel.appendChild(o); });
+  }
+}
+
+function renderArticles(articles) {
+  const el = document.getElementById('articleList');
+  if (!articles.length) { el.innerHTML = '<div class="empty">No articles match your filters</div>'; return; }
+  el.innerHTML = articles.map(a => {
+    const score = a.relevanceScore ?? a.relevance_score ?? a.score ?? 0;
+    const topics = a.topic_tags || a.topics || a.tags || [];
+    const topicHtml = (Array.isArray(topics) ? topics : [topics]).map(t => `<span class="tag">${esc(t)}</span>`).join('');
+    const url = a.url || a.link || '#';
+    return `<div class="article-item">
+      <div class="article-title"><a href="${esc(url)}" target="_blank" rel="noopener">${esc(a.title || 'Untitled')}</a></div>
+      <div class="article-meta">
+        <span class="score-badge ${scoreBadgeClass(score)}">${Number(score).toFixed(1)}</span>
+        <span class="source-label">${esc(a.source_name || a.source || 'Unknown')}</span>
+        <span>${fmtDate(a.pub_date || a.publishedAt || a.published_at || a.date || a.created_at)}</span>
+        ${topicHtml}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function loadConvergences() {
+  document.getElementById('convList').innerHTML = '<div class="loading"><div class="spinner"></div><br>Loading...</div>';
+  const data = await apiFetch('/convergences?limit=50');
+  if (!data) { document.getElementById('convList').innerHTML = '<div class="empty">Failed to load</div>'; return; }
+
+  const convs = data.convergences || data.data || (Array.isArray(data) ? data : []);
+  document.getElementById('convCount').textContent = convs.length;
+  const el = document.getElementById('convList');
+  if (!convs.length) { el.innerHTML = '<div class="empty">No convergence events yet</div>'; return; }
+
+  el.innerHTML = convs.map(c => {
+    const sources = c.sources || [];
+    const srcHtml = (Array.isArray(sources) ? sources : [sources]).map(s => `<span>${esc(typeof s === 'string' ? s : s.name || s)}</span>`).join('');
+    return `<div class="conv-item">
+      <div class="conv-topic">${esc(c.topic || c.title || 'Unnamed Event')}</div>
+      <div class="conv-sources">${srcHtml}</div>
+      <div class="conv-summary">${esc(c.summary || c.description || '')}</div>
+      <div class="conv-count">${c.articleCount ?? c.article_count ?? c.count ?? ''} articles &middot; ${fmtDate(c.date || c.detected_at || c.created_at)}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderSourceChart(data) {
+  const el = document.getElementById('sourceChart');
+  let entries;
+  if (Array.isArray(data)) {
+    entries = data.map(d => [d.source || d.name, d.count || d.total || 0]);
+  } else {
+    entries = Object.entries(data);
+  }
+  entries.sort((a,b) => b[1] - a[1]);
+  const max = Math.max(...entries.map(e => e[1]), 1);
+  el.innerHTML = entries.slice(0, 10).map(([name, count]) => {
+    const pct = (count / max * 100).toFixed(0);
+    return `<div class="bar-row">
+      <span class="bar-label" title="${esc(name)}">${esc(name)}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+      <span class="bar-val">${count}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderScoreDist(articles) {
+  const buckets = Array(10).fill(0);
+  articles.forEach(a => {
+    const s = Math.round(a.relevanceScore ?? a.relevance_score ?? a.score ?? 0);
+    if (s >= 1 && s <= 10) buckets[s-1]++;
+  });
+  const max = Math.max(...buckets, 1);
+  const distEl = document.getElementById('scoreDist');
+  const labelsEl = document.getElementById('scoreLabels');
+  distEl.innerHTML = buckets.map((c, i) => {
+    const pct = (c / max * 100).toFixed(0);
+    const cls = (i+1) >= 8 ? 'high' : (i+1) >= 5 ? 'med' : 'low';
+    return `<div class="score-bar ${cls}" style="height:${Math.max(pct, 2)}%" title="Score ${i+1}: ${c} articles"></div>`;
+  }).join('');
+  labelsEl.innerHTML = buckets.map((_, i) => `<span>${i+1}</span>`).join('');
+}
+
+function esc(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = String(s); return d.innerHTML; }
+
+function updateTimestamp() {
+  document.getElementById('lastUpdate').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+}
+
+async function refreshAll() {
+  await Promise.all([loadStats(), loadArticles(), loadConvergences()]);
+  updateTimestamp();
+}
+
+// Score slider feedback
+document.getElementById('filterScore').addEventListener('input', function() {
+  document.getElementById('scoreVal').textContent = this.value;
+});
+
+// Init
+refreshAll();
+setInterval(refreshAll, 5 * 60 * 1000);
+</script>
+</body>
+</html>
